@@ -1,4 +1,4 @@
-import { kv } from '@vercel/kv';
+import kvStore from './kv-store';
 
 interface Wish {
   id: number;
@@ -13,11 +13,11 @@ export default async function handler(req: any, res: any) {
   try {
     if (method === "GET") {
       // Fetch all wishes from KV store
-      const wishIds = await kv.lrange("wishes:ids", 0, 49);
+      const wishIds = await kvStore.lrange("wishes:ids", 0, 49);
       const wishes: Wish[] = [];
 
       for (const id of wishIds) {
-        const wish = await kv.hgetall(`wish:${id}`);
+        const wish = await kvStore.hgetall(`wish:${id}`);
         if (wish) {
           wishes.push({
             id: parseInt(id as string),
@@ -38,11 +38,11 @@ export default async function handler(req: any, res: any) {
       }
 
       // Generate unique ID
-      const id = await kv.incr("wish:counter");
+      const id = await kvStore.incr("wish:counter");
 
       // Store wish data
       const createdAt = new Date().toISOString();
-      await kv.hset(`wish:${id}`, {
+      await kvStore.hset(`wish:${id}`, {
         id,
         name: name || "Người ẩn danh",
         content,
@@ -50,10 +50,10 @@ export default async function handler(req: any, res: any) {
       });
 
       // Add ID to sorted list (newest first)
-      await kv.lpush("wishes:ids", id.toString());
+      await kvStore.lpush("wishes:ids", id.toString());
 
       // Trim to keep only last 50
-      await kv.ltrim("wishes:ids", 0, 49);
+      await kvStore.ltrim("wishes:ids", 0, 49);
 
       return res.status(200).json({ id });
     }
