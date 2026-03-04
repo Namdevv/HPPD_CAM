@@ -1,4 +1,12 @@
-// Fallback in-memory store for local development (when KV env vars missing)
+import { Redis } from '@upstash/redis';
+
+// Initialize Redis from environment
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL || '',
+  token: process.env.KV_REST_API_TOKEN || ''
+});
+
+// Fallback in-memory store for local dev without Redis
 class InMemoryStore {
   private data: Map<string, any> = new Map();
 
@@ -37,59 +45,86 @@ class InMemoryStore {
 }
 
 const inMemoryStore = new InMemoryStore();
-let vercelKv: any = null;
-let kvLoaded = false;
+let kvReady = false;
+let useRedis = false;
 
-// Lazy load Vercel KV on first use
-const initKv = async () => {
-  if (kvLoaded) return;
-  kvLoaded = true;
-  
-  if (!process.env.KV_REST_API_URL) {
-    console.log("KV_REST_API_URL not set, using in-memory store");
-    return;
-  }
+// Check if Redis credentials are available
+if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  useRedis = true;
+  console.log("Using Upstash Redis");
+} else {
+  console.log("KV credentials not set, using in-memory store");
+}
 
-  try {
-    const module = await import("@vercel/kv");
-    vercelKv = module.kv;
-    console.log("Vercel KV loaded successfully");
-  } catch (e) {
-    console.warn("Failed to load Vercel KV:", (e as any).message);
-  }
-};
-
-// Return the appropriate store (KV if available, else in-memory)
-const getStore = async () => {
-  await initKv();
-  return vercelKv || inMemoryStore;
-};
-
+// Wrapper that tries Redis first, falls back to in-memory
 export const kvStore = {
   lpush: async (key: string, ...values: string[]) => {
-    const store = await getStore();
-    return store.lpush(key, ...values);
+    if (useRedis) {
+      try {
+        return await redis.lpush(key, ...values);
+      } catch (e) {
+        console.error("Redis lpush error, falling back to in-memory:", e);
+        return inMemoryStore.lpush(key, ...values);
+      }
+    }
+    return inMemoryStore.lpush(key, ...values);
   },
   lrange: async (key: string, start: number, stop: number) => {
-    const store = await getStore();
-    return store.lrange(key, start, stop);
+    if (useRedis) {
+      try {
+        return (await redis.lrange(key, start, stop)) as string[];
+      } catch (e) {
+        console.error("Redis lrange error, falling back to in-memory:", e);
+        return inMemoryStore.lrange(key, start, stop);
+      }
+    }
+    return inMemoryStore.lrange(key, start, stop);
   },
   ltrim: async (key: string, start: number, stop: number) => {
-    const store = await getStore();
-    return store.ltrim(key, start, stop);
+    if (useRedis) {
+      try {
+        return (await redis.ltrim(key, start, stop)) as string;
+      } catch (e) {
+        console.error("Redis ltrim error, falling back to in-memory:", e);
+        return inMemoryStore.ltrim(key, start, stop);
+      }
+    }
+    return inMemoryStore.ltrim(key, start, stop);
   },
   incr: async (key: string) => {
-    const store = await getStore();
-    return store.incr(key);
+    if (useRedis) {
+      try {
+        return await redis.incr(key);
+      } catch (e) {
+        console.error("Redis incr error, falling back to in-memory:", e);
+        return inMemoryStore.incr(key);
+      }
+    }
+    return inMemoryStore.incr(key);
   },
   hset: async (key: string, data: Record<string, any>) => {
-    const store = await getStore();
-    return store.hset(key, data);
+    if (useRedis) {
+      try {
+        return await redis.hset(key, data);
+      } catch (e) {
+        console.error("Redis hset error, falling back to in-memory:", e);
+        return inMemoryStore.hset(key, data);
+      }
+    }
+    return inMemoryStore.hset(key, data);
   },
   hgetall: async (key: string) => {
-    const store = await getStore();
-    return store.hgetall(key);
+    if (useRedis) {
+      try {
+        return (await redis.hgetall(key)) as Record<string, any> | null;
+      } catch (e) {
+        console.error("Redis hgetall error, falling back to in-memory:", e);
+        return inMemoryStore.hgetall(key);
+      }
+    }
+    return inMemoryStore.hgetall(key);
   },
 };
 
 export default kvStore;
+

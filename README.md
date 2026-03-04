@@ -21,42 +21,47 @@ View your app in AI Studio: https://ai.studio/apps/57b31d80-01e4-492a-a325-b3525
 
 ## Deploy to Vercel
 
-This project builds a static frontend (Vite) and exposes a serverless API under `/api/wishes` that uses **Vercel KV** (Redis) for persistent data storage.
+This project builds a static frontend (Vite) and exposes a serverless API under `/api/wishes` that uses **Upstash Redis** (via `@upstash/redis`) for persistent data storage.
 
 ### Setup Steps
 
-1. **Enable Vercel KV in your project:**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Select your project
-   - Navigate to **Storage** tab
-   - Click **Create Database** and select **KV** 
-   - Confirm setup (Vercel will auto-populate environment variables)
+1. **Get Redis credentials** (if not already set up):
+   - Go to [Upstash Console](https://console.upstash.io)
+   - Create a new Redis database
+   - Copy `KV_REST_API_URL` and `KV_REST_API_TOKEN`
+   - Add them to [.env.local](.env.local)
 
-2. **Install dependencies locally:**
+2. **Or use Vercel KV** (auto-setup):
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard) → your project → **Storage** tab
+   - Create or connect a **KV** database
+   - Vercel auto-injects `KV_REST_API_URL` and `KV_REST_API_TOKEN`
+
+3. **Install dependencies locally:**
    ```bash
    npm install
    ```
 
-3. **Build the static site:**
+4. **Test locally:**
+   ```bash
+   npm run dev
+   ```
+   - Open http://localhost:3000 and try posting a wish
+
+5. **Build the static site:**
    ```bash
    npm run vercel-build
    ```
 
-4. **Deploy to Vercel:**
+6. **Deploy to Vercel:**
    ```bash
    vercel --prod
    ```
 
-### Why Vercel KV?
+### Why Upstash Redis?
 
-- **Persistent storage** across serverless invocations (SQLite on Vercel is ephemeral).
-- **Integrated** into Vercel—no external database service needed.
-- **Auto-scales** with your traffic.
-
-### Alternative: External Database
-
-If you prefer, you can replace Vercel KV with **Supabase PostgreSQL**:
-- Install `@supabase/supabase-js`
-- Update `api/wishes.ts` to use Supabase client
-- Set `SUPABASE_URL` and `SUPABASE_ANON_KEY` env vars in Vercel dashboard
+- **Portable** — Works on Vercel, local machine, Docker, any platform
+- **Native Redis client** — Direct `@upstash/redis` (no wrapper)
+- **Persistent** — Data survives serverless function invocations
+- **Free tier** — Generous free quota for hobby projects
+- **Fallback** — Uses in-memory store if Redis credentials missing (for local dev)
 
