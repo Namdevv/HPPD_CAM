@@ -6,24 +6,402 @@
 }
 
 body {
-  background-color: #fffaf0;
-  color: #5d4037;
+  background: linear-gradient(160deg, #fffbeb 0%, #fef3c7 30%, #fde68a 60%, #fef9c3 100%);
+  color: #78350f;
+  min-height: 100vh;
 }
 
-.birthday-gradient {
-  background: linear-gradient(135deg, #fff5f5 0%, #fff0f6 50%, #f0f4ff 100%);
+/* Bunting / Cờ trang trí */
+.bunting {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 0.5rem 1rem;
+  padding-top: 1.5rem;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.glass-card {
+.bunting-flag {
+  width: 28px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ========== Trang đầu — Hero thiệp mời ========== */
+.hero-section {
+  padding: 1.5rem 1rem 4rem;
+  max-width: 920px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hero-bg-blobs {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.35;
+  animation: blob-float 8s ease-in-out infinite;
+}
+
+.hero-blob-1 {
+  width: 200px;
+  height: 200px;
+  background: #f9a8d4;
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.hero-blob-2 {
+  width: 180px;
+  height: 180px;
+  background: #a5b4fc;
+  top: 50%;
+  right: 10%;
+  animation-delay: -2s;
+}
+
+.hero-blob-3 {
+  width: 160px;
+  height: 160px;
+  background: #fde047;
+  bottom: 15%;
+  left: 15%;
+  animation-delay: -4s;
+}
+
+@keyframes blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15px, -20px) scale(1.05); }
+  66% { transform: translate(-10px, 10px) scale(0.98); }
+}
+
+.hero-card {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 767px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Ảnh chính — lớn, bo góc mềm */
+.hero-photo-main .invitation-photo-placeholder {
+  aspect-ratio: 4/5;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(139, 92, 46, 0.15);
+  border: none;
+}
+
+.hero-photo-main .invitation-photo-placeholder > img {
+  border-radius: 24px;
+}
+
+.hero-photo-main {
+  position: relative;
+}
+
+/* Placeholder khi chưa có ảnh — gradient đẹp, không khung cứng */
+.placeholder-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 200px;
+  padding: 1rem;
+}
+
+.placeholder-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
 }
 
+.placeholder-icon {
+  width: 32px;
+  height: 32px;
+  color: #d97706;
+}
+
+.placeholder-label {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.placeholder-hint {
+  font-size: 0.8rem;
+  color: #b45309;
+  opacity: 0.85;
+  margin-top: 0.25rem;
+}
+
+.invitation-photo-placeholder {
+  aspect-ratio: 1;
+  border: 2px dashed rgba(251, 191, 36, 0.4);
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(255, 251, 235, 0.9) 0%, rgba(254, 243, 199, 0.6) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.invitation-photo-placeholder > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.invitation-photo-placeholder:has(> img) {
+  border: none;
+  background: transparent;
+}
+
+.invitation-photo-placeholder:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.12);
+}
+
+/* Khối chữ bên phải */
+.hero-text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hero-cake {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.hero-title-wrap {
+  margin-bottom: 0.25rem;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 5vw, 2.75rem);
+  margin: 0 0 0.2rem 0;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 40%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-age {
+  -webkit-text-fill-color: transparent;
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-size: 1.1em;
+}
+
+.hero-age sup {
+  font-size: 0.4em;
+  opacity: 0.9;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.5vw, 1.9rem);
+  color: #1c1917;
+  margin: 0 0 0.35rem 0;
+  font-weight: 600;
+}
+
+.hero-date {
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #78350f;
+  margin: 0;
+}
+
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: #b45309;
+  margin: 0;
+}
+
+.hero-invite {
+  font-size: 0.9rem;
+  color: #57534e;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Ảnh phụ nhỏ — dạng polaroid */
+.hero-photo-accent {
+  max-width: 140px;
+  margin-top: 0.5rem;
+}
+
+.hero-photo-accent .invitation-photo-placeholder {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(139, 92, 46, 0.12);
+}
+
+.hero-photo-accent .invitation-photo-placeholder > img {
+  border-radius: 10px;
+}
+
+/* Lời chúc cuối */
+.hero-blessing {
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 16px;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  margin-top: 0.5rem;
+}
+
+.hero-blessing-main {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #78350f;
+  margin: 0 0 0.3rem 0;
+  line-height: 1.45;
+}
+
+.hero-blessing-sub {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: #b45309;
+  margin: 0;
+}
+
+.hero-balloons {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.balloon {
+  width: 24px;
+  height: 30px;
+  border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+  box-shadow: inset -4px -4px 8px rgba(0,0,0,0.08);
+}
+
+.balloon-1 { background: linear-gradient(135deg, #f9a8d4 0%, #f472b6 100%); }
+.balloon-2 { background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%); }
+.balloon-3 { background: linear-gradient(135deg, #fde047 0%, #facc15 100%); }
+
+/* Nút gửi lời chúc */
+.btn-send-wish {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-send-wish:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+}
+
+/* Confetti trang trí */
+.confetti-dots {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.confetti-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: confetti-float 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes confetti-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+  50% { transform: translateY(-12px) rotate(180deg); opacity: 0.9; }
+}
+
+/* Khu vực lời chúc — tăng padding-top tránh chồng lên album */
+#wishes-section.wishes-section {
+  padding: 5rem 0 4rem;
+  margin-top: 4rem;
+  scroll-margin-top: 2rem;
+  background: linear-gradient(180deg, rgba(254, 243, 199, 0.4) 0%, rgba(255, 251, 235, 0.9) 100%);
+  position: relative;
+  z-index: 1;
+}
+
+/* Footer */
+.footer-invitation {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 251, 235, 0.9) 0%, rgba(254, 243, 199, 0.6) 100%);
+  border-top: 1px solid rgba(251, 191, 36, 0.25);
+  position: relative;
+  z-index: 1;
+}
+
+/* Animations chung */
 @keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
+  0% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(0) rotate(0deg); }
 }
 
 .animate-float {
@@ -35,20 +413,236 @@ body {
   animation-delay: 2s;
 }
 
-@keyframes jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-40px); }
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.animate-jump {
-  animation: jump 0.8s ease-in-out infinite;
+/* Album — Những khoảnh khắc đáng yêu (masonry + polaroid) */
+.album-section {
+  padding: 3rem 1rem 5rem;
+  position: relative;
+  z-index: 1;
 }
 
-.animate-jump-delayed {
-  animation: jump 1s ease-in-out infinite;
-  animation-delay: 0.3s;
+.album-section-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.animate-jump-fast {
-  animation: jump 0.6s ease-in-out infinite;
+.album-header {
+  margin-bottom: 2rem;
+}
+
+.album-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.25rem);
+  color: #b45309;
+  margin-bottom: 0.25rem;
+}
+
+/* Masonry-style grid: 2 cột mobile, 3 cột desktop, ô lớn span 2 */
+.album-masonry {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  grid-auto-rows: 140px;
+}
+
+@media (min-width: 640px) {
+  .album-masonry {
+    gap: 1.25rem;
+    grid-auto-rows: 160px;
+  }
+}
+
+@media (min-width: 768px) {
+  .album-masonry {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    grid-auto-rows: 150px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .album-masonry {
+    gap: 1.5rem;
+    grid-auto-rows: 160px;
+  }
+}
+
+.album-item {
+  min-height: 0;
+}
+
+.album-item--small {
+  grid-row: span 2;
+}
+
+.album-item--large {
+  grid-column: span 2;
+  grid-row: span 3;
+}
+
+@media (max-width: 767px) {
+  .album-item--large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+
+/* Khung kiểu polaroid / scrapbook */
+.album-photo-frame {
+  height: 100%;
+  min-height: 100px;
+  background: #fff;
+  padding: 6px;
+  padding-bottom: 1.5rem;
+  border-radius: 4px;
+  box-shadow:
+    0 2px 8px rgba(139, 92, 46, 0.12),
+    0 8px 24px rgba(139, 92, 46, 0.08);
+  transition: box-shadow 0.25s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.album-item:hover .album-photo-frame {
+  box-shadow:
+    0 8px 20px rgba(139, 92, 46, 0.18),
+    0 16px 40px rgba(139, 92, 46, 0.12);
+}
+
+.album-photo-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 12px;
+  right: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.35), transparent);
+  border-radius: 1px;
+}
+
+.album-photo-img {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+}
+
+/* Lightbox popup — xem ảnh to + lật trái/phải */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.lightbox-content {
+  position: relative;
+  width: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -3rem;
+  right: 0;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.lightbox-image-wrap {
+  perspective: 1200px;
+  width: 100%;
+  max-width: 800px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.lightbox-image-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.lightbox-image-inner img {
+  max-width: 100%;
+  max-height: 70vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0.5rem 0;
+}
+
+.lightbox-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.lightbox-counter {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 4rem;
+  text-align: center;
 }

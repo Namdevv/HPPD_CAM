@@ -7,11 +7,19 @@ interface Wish {
   created_at: string;
 }
 
-// Initialize Redis from environment
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL || '',
-  token: process.env.KV_REST_API_TOKEN || ''
-});
+// Chỉ bật Redis khi có đủ cả URL và Token (bắt buộc trên Vercel)
+const hasKvEnv =
+  typeof process.env.KV_REST_API_URL === "string" &&
+  process.env.KV_REST_API_URL.length > 0 &&
+  typeof process.env.KV_REST_API_TOKEN === "string" &&
+  process.env.KV_REST_API_TOKEN.length > 0;
+
+const redis: Redis | null = hasKvEnv
+  ? new Redis({
+      url: process.env.KV_REST_API_URL!,
+      token: process.env.KV_REST_API_TOKEN!
+    })
+  : null;
 
 // Fallback in-memory store
 class InMemoryStore {
@@ -46,12 +54,12 @@ class InMemoryStore {
 }
 
 const inMemoryStore = new InMemoryStore();
-const useRedis = !!process.env.KV_REST_API_URL;
+const useRedis = hasKvEnv;
 
 // Store wrapper
 const kvStore = {
   lpush: async (key: string, ...values: string[]) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return await redis.lpush(key, ...values);
       } catch (e) {
@@ -62,7 +70,7 @@ const kvStore = {
     return inMemoryStore.lpush(key, ...values);
   },
   lrange: async (key: string, start: number, stop: number) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return (await redis.lrange(key, start, stop)) as string[];
       } catch (e) {
@@ -73,7 +81,7 @@ const kvStore = {
     return inMemoryStore.lrange(key, start, stop);
   },
   ltrim: async (key: string, start: number, stop: number) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return (await redis.ltrim(key, start, stop)) as string;
       } catch (e) {
@@ -84,7 +92,7 @@ const kvStore = {
     return inMemoryStore.ltrim(key, start, stop);
   },
   incr: async (key: string) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return await redis.incr(key);
       } catch (e) {
@@ -95,7 +103,7 @@ const kvStore = {
     return inMemoryStore.incr(key);
   },
   hset: async (key: string, data: Record<string, any>) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return await redis.hset(key, data);
       } catch (e) {
@@ -106,7 +114,7 @@ const kvStore = {
     return inMemoryStore.hset(key, data);
   },
   hgetall: async (key: string) => {
-    if (useRedis) {
+    if (useRedis && redis) {
       try {
         return (await redis.hgetall(key)) as Record<string, any> | null;
       } catch (e) {
@@ -171,8 +179,13 @@ export default async function handler(req: any, res: any) {
 
     res.setHeader("Allow", "GET, POST");
     res.status(405).end("Method Not Allowed");
-  } catch (error) {
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
     console.error("API Error:", error);
-    return res.status(500).json({ error: "Lỗi server: " + (error as any).message });
+    // Gợi ý kiểm tra KV khi lỗi Redis trên Vercel
+    const hint = useRedis && /redis|upstash|unauthorized|connection/i.test(msg)
+      ? " Kiểm tra Vercel → Project Settings → Environment Variables: KV_REST_API_URL và KV_REST_API_TOKEN (từ Storage/KV hoặc Upstash)."
+      : "";
+    return res.status(500).json({ error: "Lỗi server: " + msg + hint });
   }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Gift, Camera, MessageCircle, Send, Sparkles, Star, Cake, Rabbit, Cat, Dog, Bird, Ghost } from 'lucide-react';
+import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface Wish {
@@ -11,31 +11,77 @@ interface Wish {
 }
 
 const SUGGESTED_WISHES = [
-  "Chúc bé mau ăn chóng lớn, luôn ngoan ngoãn và vâng lời ông bà cha mẹ nhé!",
+  "Chúc bé Cam mau ăn chóng lớn, luôn ngoan ngoãn và vâng lời ông bà cha mẹ nhé!",
   "Mừng sinh nhật đầu đời của thiên thần nhỏ! Chúc con một đời an nhiên, hạnh phúc.",
   "Chúc con yêu luôn rạng rỡ như ánh mặt trời, là niềm tự hào của cả gia đình.",
   "Hay ăn chóng lớn, thông minh học giỏi con nhé. Yêu con rất nhiều!",
-  "Chúc mừng sinh nhật 1 tuổi! Chúc con luôn khỏe mạnh và tràn đầy tiếng cười."
+  "Chúc mừng sinh nhật 1 tuổi! Chúc bé Cam luôn khỏe mạnh và tràn đầy tiếng cười."
 ];
 
-const JumpingAnimal = ({ icon: Icon, color, className = "", delay = 0 }: { icon: any, color: string, className?: string, delay?: number }) => (
-  <motion.div
-    animate={{ 
-      y: [0, -40, 0],
-      scale: [1, 1.1, 1],
-      rotate: [0, 5, -5, 0]
-    }}
-    transition={{ 
-      duration: 1.2, 
-      repeat: Infinity, 
-      ease: "easeInOut",
-      delay: delay 
-    }}
-    className={`inline-block ${className}`}
-  >
-    <Icon size={48} className={color} fill="currentColor" fillOpacity={0.2} />
-  </motion.div>
+// Ảnh của bé — thêm URL vào đây khi có (vd: main1: '/photo1.jpg')
+const MY_PHOTOS = {
+  main1: undefined as string | undefined,
+  main2: undefined as string | undefined,
+};
+
+const PhotoPlaceholder = ({ id, label, src }: { id: string; label: string; src?: string }) => (
+  <div className="invitation-photo-placeholder group overflow-hidden rounded-2xl" aria-label={label}>
+    {src ? (
+      <img src={src} alt={label} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+    ) : (
+      <div className="placeholder-inner">
+        <div className="placeholder-icon-wrap">
+          <Camera className="placeholder-icon" strokeWidth={1.5} />
+        </div>
+        <span className="placeholder-label">{label}</span>
+        <span className="placeholder-hint">Thêm ảnh của bé</span>
+      </div>
+    )}
+  </div>
 );
+
+// Album: ảnh mẫu với seed khác nhau, kích thước lẫn lộn (small | large) cho masonry
+const ALBUM_ITEMS: { seed: string; size: 'small' | 'large' }[] = [
+  { seed: 'baby1', size: 'large' },
+  { seed: 'baby2', size: 'small' },
+  { seed: 'baby3', size: 'small' },
+  { seed: 'baby4', size: 'small' },
+  { seed: 'baby5', size: 'large' },
+  { seed: 'baby6', size: 'small' },
+  { seed: 'baby7', size: 'small' },
+  { seed: 'baby8', size: 'small' },
+  { seed: 'baby9', size: 'large' },
+  { seed: 'baby10', size: 'small' },
+  { seed: 'baby11', size: 'small' },
+  { seed: 'baby12', size: 'small' },
+];
+
+const AlbumPhoto = ({ seed, size, onClick }: { seed: string; size: 'small' | 'large'; onClick: () => void }) => {
+  const w = size === 'large' ? 480 : 280;
+  const h = size === 'large' ? 420 : 280;
+  const src = `https://picsum.photos/seed/${seed}/${w}/${h}`;
+  return (
+    <motion.div
+      className={`album-item album-item--${size}`}
+      whileHover={{ scale: 1.02, rotate: size === 'small' ? (seed.length % 2 === 0 ? 1 : -1) : 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
+    >
+      <div className="album-photo-frame cursor-pointer">
+        <img src={src} alt={`Khoảnh khắc ${seed}`} className="album-photo-img" referrerPolicy="no-referrer" />
+      </div>
+    </motion.div>
+  );
+};
+
+// URL ảnh size lớn cho lightbox
+const getAlbumImageSrc = (seed: string, large = true) => {
+  const size = large ? '1200/900' : '800/600';
+  return `https://picsum.photos/seed/${seed}/${size}`;
+};
 
 export default function App() {
   const [wishes, setWishes] = useState<Wish[]>([]);
@@ -43,10 +89,24 @@ export default function App() {
   const [content, setContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxDirection, setLightboxDirection] = useState<1 | -1>(1);
 
   useEffect(() => {
     fetchWishes();
   }, []);
+
+  useEffect(() => {
+    if (lightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [lightboxOpen]);
 
   const fetchWishes = async () => {
     try {
@@ -75,7 +135,7 @@ export default function App() {
           particleCount: 150,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#ff9a9e', '#fad0c4', '#a1c4fd', '#c2e9fb']
+          colors: ['#fcd34d', '#f9a8d4', '#a5b4fc', '#86efac']
         });
         setName('');
         setContent('');
@@ -95,161 +155,193 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen font-sans selection:bg-pink-200 selection:text-pink-900">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden birthday-gradient">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="absolute top-10 left-10 text-pink-300"
-          >
-            <Star size={48} fill="currentColor" className="animate-float" />
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="absolute bottom-20 right-10 text-blue-300"
-          >
-            <Star size={64} fill="currentColor" className="animate-float-delayed" />
-          </motion.div>
-          <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-yellow-200 rounded-full blur-3xl opacity-30 animate-pulse" />
-          <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-pink-200 rounded-full blur-3xl opacity-30 animate-pulse" />
-          
-          {/* Floating Animals in Hero */}
-          <div className="absolute top-1/3 left-[15%] hidden md:block">
-            <JumpingAnimal icon={Rabbit} color="text-pink-400" delay={0} />
-          </div>
-          <div className="absolute bottom-1/4 right-[15%] hidden md:block">
-            <JumpingAnimal icon={Cat} color="text-blue-400" delay={0.5} />
-          </div>
+    <div className="min-h-screen font-sans selection:bg-pink-200 selection:text-pink-900 invitation-page">
+      {/* Bunting / Cờ trang trí */}
+      <div className="bunting" aria-hidden>
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="bunting-flag"
+            style={{
+              background: ['#93c5fd', '#fde047', '#f9a8d4', '#86efac', '#c4b5fd'][i % 5],
+              clipPath: 'polygon(0 0, 100% 0, 50% 100%)',
+            }}
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            transition={{ delay: i * 0.05, duration: 0.4 }}
+          />
+        ))}
+      </div>
+
+      {/* Trang đầu — hero thiệp mời */}
+      <section className="hero-section">
+        <div className="hero-bg-blobs" aria-hidden>
+          <span className="hero-blob hero-blob-1" />
+          <span className="hero-blob hero-blob-2" />
+          <span className="hero-blob hero-blob-3" />
         </div>
 
-        <div className="container mx-auto px-4 text-center z-10">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="mb-8"
-          >
-            <div className="relative inline-block">
-              <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border-8 border-white shadow-2xl overflow-hidden mx-auto bg-white">
-                <img 
-                  src="https://picsum.photos/seed/baby1/600/600" 
-                  alt="Bé Mỡ" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-              <motion.div 
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4 }}
-                className="absolute -top-4 -right-4 bg-yellow-400 text-white p-4 rounded-full shadow-lg"
+        <motion.div
+          className="hero-card"
+          initial={{ y: 24, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <div className="hero-layout">
+            {/* Ảnh chính — thêm URL vào MY_PHOTOS.main1 khi có ảnh */}
+            <motion.div
+              className="hero-photo-main"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15, duration: 0.5 }}
+            >
+              <PhotoPlaceholder id="photo1" label="Ảnh bé Cam" src={MY_PHOTOS.main1} />
+            </motion.div>
+
+            <div className="hero-text-block">
+              <motion.div
+                className="hero-title-wrap"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.45 }}
               >
-                <Cake size={32} />
+                <span className="hero-cake">
+                  <Cake size={28} className="text-pink-400" />
+                </span>
+                <h1 className="hero-title">
+                  Happy Birthday! <span className="hero-age">1<sup>st</sup></span>
+                </h1>
+                <p className="hero-name">Baby Cam</p>
+                <p className="hero-date">13.04.2026</p>
+              </motion.div>
+
+              <motion.p
+                className="hero-subtitle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.45 }}
+              >
+                Nhân dịp mừng thôi nôi Baby Cam
+              </motion.p>
+              <motion.p
+                className="hero-invite"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.55 }}
+              >
+                Trân trọng kính mời quý khách đến tham dự buổi tiệc cùng gia đình chúng tôi tại tư gia.
+              </motion.p>
+
+              {/* Ảnh phụ nhỏ — thêm MY_PHOTOS.main2 khi có */}
+              <motion.div
+                className="hero-photo-accent"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                <PhotoPlaceholder id="photo2" label="Ảnh bé" src={MY_PHOTOS.main2} />
+              </motion.div>
+
+              {/* Lời chúc cuối — giữ nguyên */}
+              <motion.div
+                className="hero-blessing"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
+                <p className="hero-blessing-main">
+                  Sự có mặt của quý vị là lời chúc tốt đẹp nhất dành cho bé!
+                </p>
+                <p className="hero-blessing-sub">mừng thôi nôi bé Cam</p>
               </motion.div>
             </div>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-5xl md:text-7xl font-display text-pink-500 mb-4 drop-shadow-sm"
-          >
-            Mừng Bé Mỡ Tròn 1 Tuổi!
-          </motion.h1>
-          
-          <motion.p 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto font-light"
-          >
-            Hành trình 365 ngày đầu đời đầy ắp tiếng cười và những kỷ niệm vô giá.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-            className="mt-12"
-          >
-            <button 
-              onClick={() => document.getElementById('wishes-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2 mx-auto group"
-            >
-              Gửi lời chúc cho bé <Heart size={20} className="group-hover:scale-125 transition-transform" />
-            </button>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Milestones Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-display text-blue-500 mb-4">Những Khoảnh Khắc Đáng Yêu</h2>
-            <div className="w-24 h-1 bg-blue-200 mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { title: "Lúc mới chào đời", img: "https://picsum.photos/seed/baby-newborn/400/500", desc: "Thiên thần nhỏ đến với thế giới." },
-              { title: "Biết lẫy rồi nè", img: "https://picsum.photos/seed/baby-crawl/400/500", desc: "Những nỗ lực đầu tiên của con." },
-              { title: "Chiếc răng đầu tiên", img: "https://picsum.photos/seed/baby-smile/400/500", desc: "Nụ cười tỏa nắng của bé yêu." }
-            ].map((item, idx) => (
+          <div className="hero-balloons" aria-hidden>
+            <motion.span className="balloon balloon-1" animate={{ y: [0, -10, 0] }} transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }} />
+            <motion.span className="balloon balloon-2" animate={{ y: [0, -12, 0] }} transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }} />
+            <motion.span className="balloon balloon-3" animate={{ y: [0, -8, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }} />
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="mt-10 text-center"
+        >
+          <button
+            type="button"
+            onClick={() => document.getElementById('wishes-section')?.scrollIntoView({ behavior: 'smooth' })}
+            className="btn-send-wish"
+          >
+            Gửi lời chúc cho bé <Heart size={20} className="inline-block ml-1" />
+          </button>
+        </motion.div>
+      </section>
+
+      {/* Những khoảnh khắc đáng yêu của bé — album */}
+      <section className="album-section">
+        <div className="album-section-inner">
+          <div className="text-center album-header">
+            <div className="w-20 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full mx-auto mb-4" />
+            <motion.h2
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              Những khoảnh khắc đáng yêu của bé
+            </motion.h2>
+            <p className="text-gray-600 text-sm mt-2 max-w-md mx-auto">Lật qua và xem từng kỷ niệm nhé ✨</p>
+          </div>
+          <motion.div
+            className="album-masonry"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            viewport={{ once: true, margin: "-40px" }}
+          >
+            {ALBUM_ITEMS.map((item, i) => (
               <motion.div
-                key={idx}
-                whileHover={{ y: -10 }}
-                className="glass-card rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all"
+                key={item.seed}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.35 }}
+                viewport={{ once: true }}
               >
-                <img src={item.img} alt={item.title} className="w-full h-72 object-cover" referrerPolicy="no-referrer" />
-                <div className="p-6 text-center">
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                  <p className="text-gray-500 text-sm">{item.desc}</p>
-                </div>
+                <AlbumPhoto
+                  seed={item.seed}
+                  size={item.size}
+                  onClick={() => {
+                    setLightboxIndex(i);
+                    setLightboxDirection(1);
+                    setLightboxOpen(true);
+                  }}
+                />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Party Friends Section */}
-      <section className="py-20 bg-pink-50/30 overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-display text-pink-500 mb-2">Những Người Bạn Nhỏ Đến Chúc Mừng</h2>
-            <p className="text-gray-500 italic">Các bạn ấy đang nhảy múa vui vẻ cùng bé Mỡ nè!</p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-12 md:gap-24 items-end py-10">
-            <div className="text-center group cursor-pointer" onClick={() => confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } })}>
-              <JumpingAnimal icon={Rabbit} color="text-pink-400" delay={0.1} />
-              <p className="mt-4 font-display text-pink-400 opacity-0 group-hover:opacity-100 transition-opacity">Bạn Thỏ</p>
-            </div>
-            <div className="text-center group cursor-pointer" onClick={() => confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } })}>
-              <JumpingAnimal icon={Cat} color="text-orange-400" delay={0.3} />
-              <p className="mt-4 font-display text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity">Bạn Mèo</p>
-            </div>
-            <div className="text-center group cursor-pointer" onClick={() => confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } })}>
-              <JumpingAnimal icon={Dog} color="text-blue-400" delay={0.5} />
-              <p className="mt-4 font-display text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">Bạn Cún</p>
-            </div>
-            <div className="text-center group cursor-pointer" onClick={() => confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } })}>
-              <JumpingAnimal icon={Bird} color="text-yellow-400" delay={0.7} />
-              <p className="mt-4 font-display text-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity">Bạn Chim</p>
-            </div>
-            <div className="text-center group cursor-pointer" onClick={() => confetti({ particleCount: 50, spread: 40, origin: { y: 0.8 } })}>
-              <JumpingAnimal icon={Ghost} color="text-purple-400" delay={0.9} />
-              <p className="mt-4 font-display text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">Bạn Rồng Nhỏ</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Confetti nhỏ trang trí */}
+      <div className="confetti-dots" aria-hidden>
+        {[...Array(18)].map((_, i) => (
+          <span
+            key={i}
+            className="confetti-dot"
+            style={{
+              left: `${5 + (i * 5.5)}%`,
+              top: `${15 + (i % 4) * 20}%`,
+              background: ['#fcd34d', '#f9a8d4', '#a5b4fc', '#86efac', '#c4b5fd'][i % 5],
+              animationDelay: `${i * 0.1}s`,
+            }}
+          />
+        ))}
+      </div>
 
-      {/* Wishes Section */}
-      <section id="wishes-section" className="py-24 birthday-gradient">
+      {/* Khu vực gửi lời chúc */}
+      <section id="wishes-section" className="wishes-section">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
             <motion.div
@@ -259,13 +351,12 @@ export default function App() {
             >
               <MessageCircle size={40} className="text-pink-500" />
             </motion.div>
-            <h2 className="text-4xl font-display text-pink-600 mb-4">Gửi Lời Chúc Yêu Thương</h2>
-            <p className="text-gray-600">Hãy để lại những lời chúc tốt đẹp nhất cho hành trình tương lai của bé nhé!</p>
+            <h2 className="text-3xl md:text-4xl font-display text-pink-600 mb-4">Gửi Lời Chúc Yêu Thương</h2>
+            <p className="text-gray-600">Hãy để lại những lời chúc tốt đẹp nhất cho bé Cam nhé!</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Form */}
-            <motion.div 
+            <motion.div
               initial={{ x: -20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               className="bg-white p-8 rounded-3xl shadow-xl border border-pink-100"
@@ -273,8 +364,8 @@ export default function App() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Tên của bạn</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Nhập tên của bạn..."
@@ -283,7 +374,7 @@ export default function App() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Lời chúc</label>
-                  <textarea 
+                  <textarea
                     rows={4}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
@@ -302,18 +393,18 @@ export default function App() {
                         onClick={() => selectSuggested(wish)}
                         className="text-xs bg-pink-50 hover:bg-pink-100 text-pink-600 px-3 py-2 rounded-lg transition-colors text-left"
                       >
-                        {wish.substring(0, 30)}...
+                        {wish.substring(0, 32)}...
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <button 
+                <button
                   type="submit"
                   disabled={isSubmitting}
                   className="w-full bg-pink-500 hover:bg-pink-600 disabled:bg-gray-300 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                 >
-                  {isSubmitting ? "Đang gửi..." : (
+                  {isSubmitting ? 'Đang gửi...' : (
                     <>Gửi lời chúc <Send size={18} /></>
                   )}
                 </button>
@@ -333,8 +424,7 @@ export default function App() {
               </AnimatePresence>
             </motion.div>
 
-            {/* List of wishes */}
-            <motion.div 
+            <motion.div
               initial={{ x: 20, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
@@ -346,7 +436,7 @@ export default function App() {
                 <div className="text-center py-12 text-gray-400 italic">Chưa có lời chúc nào. Hãy là người đầu tiên nhé!</div>
               ) : (
                 wishes.map((wish) => (
-                  <motion.div 
+                  <motion.div
                     key={wish.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -356,7 +446,7 @@ export default function App() {
                       <span className="font-bold text-pink-500">{wish.name}</span>
                       <span className="text-[10px] text-gray-400">{new Date(wish.created_at).toLocaleDateString('vi-VN')}</span>
                     </div>
-                    <p className="text-gray-700 text-sm leading-relaxed italic">"{wish.content}"</p>
+                    <p className="text-gray-700 text-sm leading-relaxed italic">&quot;{wish.content}&quot;</p>
                   </motion.div>
                 ))
               )}
@@ -365,31 +455,105 @@ export default function App() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-white text-center border-t border-gray-100">
-        <div className="flex items-center justify-center gap-4 mb-6">
+      {/* Lightbox xem ảnh album — lật trái/phải với animation */}
+      <AnimatePresence>
+        {lightboxOpen && (
+          <motion.div
+            className="lightbox-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setLightboxOpen(false)}
+          >
+            <motion.div
+              className="lightbox-content"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="lightbox-close"
+                onClick={() => setLightboxOpen(false)}
+                aria-label="Đóng"
+              >
+                <X size={28} />
+              </button>
+
+              <div className="lightbox-image-wrap">
+                <AnimatePresence mode="wait" custom={lightboxDirection}>
+                  <motion.div
+                    key={lightboxIndex}
+                    className="lightbox-image-inner"
+                    custom={lightboxDirection}
+                    initial={{ rotateY: lightboxDirection === 1 ? 90 : -90, opacity: 0 }}
+                    animate={{ rotateY: 0, opacity: 1 }}
+                    exit={{ rotateY: lightboxDirection === 1 ? -90 : 90, opacity: 0 }}
+                    transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
+                  >
+                    <img
+                      src={getAlbumImageSrc(ALBUM_ITEMS[lightboxIndex].seed)}
+                      alt={`Khoảnh khắc ${lightboxIndex + 1}`}
+                      referrerPolicy="no-referrer"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              <div className="lightbox-nav">
+                <button
+                  type="button"
+                  className="lightbox-btn lightbox-prev"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxDirection(-1);
+                    setLightboxIndex((prev) => (prev <= 0 ? ALBUM_ITEMS.length - 1 : prev - 1));
+                  }}
+                  aria-label="Ảnh trước"
+                >
+                  <ChevronLeft size={36} />
+                </button>
+                <span className="lightbox-counter">
+                  {lightboxIndex + 1} / {ALBUM_ITEMS.length}
+                </span>
+                <button
+                  type="button"
+                  className="lightbox-btn lightbox-next"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLightboxDirection(1);
+                    setLightboxIndex((prev) => (prev >= ALBUM_ITEMS.length - 1 ? 0 : prev + 1));
+                  }}
+                  aria-label="Ảnh sau"
+                >
+                  <ChevronRight size={36} />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Footer — nhắc lại lời chúc cuối */}
+      <footer className="footer-invitation">
+        <div className="flex items-center justify-center gap-4 mb-4">
           <div className="w-12 h-px bg-gray-200" />
           <Heart size={24} className="text-pink-300" fill="currentColor" />
           <div className="w-12 h-px bg-gray-200" />
         </div>
-        <p className="text-gray-400 text-sm">© 2026 - Mừng Bé Mỡ Tròn 1 Tuổi</p>
-        <p className="text-gray-300 text-xs mt-2 italic">Made with love for our little angel</p>
+        <p className="text-gray-600 text-sm font-medium">Sự có mặt của quý vị là lời chúc tốt đẹp nhất dành cho bé!</p>
+        <p className="text-gray-500 text-xs mt-2">mừng thôi nôi bé Cam · 13.04.2026</p>
+        <p className="text-gray-400 text-xs mt-3 italic">Made with love for Baby Cam</p>
       </footer>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #fbcfe8;
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #f9a8d4;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f9a8d4; }
       `}</style>
     </div>
   );
