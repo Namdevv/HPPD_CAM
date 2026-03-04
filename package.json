@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build",
+    "vercel-build": "vite build",
     "preview": "vite preview",
+    "start": "node server.ts",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },
