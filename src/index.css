@@ -36,6 +36,31 @@ body {
   --content-padding: clamp(1rem, 3vw, 1.5rem);
 }
 
+/* Nút bật/tắt nhạc Happy Birthday */
+.music-toggle {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 50;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 46, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.music-toggle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(139, 92, 46, 0.25);
+}
+
 /* ========== Trang đầu — Hero thiệp mời ========== */
 .hero-section {
   padding: 1.5rem var(--content-padding) 4rem;

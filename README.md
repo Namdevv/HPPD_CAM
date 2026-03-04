@@ -8,6 +8,10 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/57b31d80-01e4-492a-a325-b35257dd62e6
 
+## Nhạc Happy Birthday
+
+Trang tự phát nhạc khi mở. Đặt file **`happy-birthday.mp3`** vào thư mục **`public/`**. Nếu trình duyệt chặn autoplay, bấm nút loa góc dưới phải để bật nhạc.
+
 ## Run Locally
 
 **Prerequisites:**  Node.js

@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X, MapPin } from 'lucide-react';
+import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X, MapPin, Volume2, VolumeX } from 'lucide-react';
 
 // Địa điểm tiệc — sửa địa chỉ và link Google Maps embed (lấy từ Google Maps → Chia sẻ → Nhúng bản đồ)
 const PARTY_ADDRESS = '964/2 Lê Đức Anh, Tân Tạo, Bình Tân, TP.HCM';
 // Lấy link embed: Google Maps → Chọn địa điểm → Chia sẻ → Nhúng bản đồ → copy src của iframe
 const PARTY_MAP_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(PARTY_ADDRESS)}&output=embed`;
 import confetti from 'canvas-confetti';
+
+// Nhạc Happy Birthday — đặt file happy-birthday.mp3 vào thư mục public/
+const BIRTHDAY_MUSIC_SRC = '/atlasaudio-birthday-491022.mp3';
 
 interface Wish {
   id: number;
@@ -97,6 +100,8 @@ export default function App() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxDirection, setLightboxDirection] = useState<1 | -1>(1);
+  const [musicMuted, setMusicMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     fetchWishes();
@@ -112,6 +117,45 @@ export default function App() {
       document.body.style.overflow = '';
     };
   }, [lightboxOpen]);
+
+  // Nhạc — đồng bộ trạng thái mute
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = musicMuted;
+  }, [musicMuted]);
+
+  // Tự phát khi vào web; nếu trình duyệt chặn thì bấm/chạm một cái là có tiếng
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.volume = 0.6;
+
+    const tryPlay = () => {
+      if (!audio.paused) return;
+      audio.muted = musicMuted;
+      audio.play().catch(() => {});
+    };
+
+    tryPlay();
+    audio.addEventListener('canplaythrough', tryPlay);
+
+    const onFirstInteraction = () => {
+      setMusicMuted(false);
+      if (audio.paused) {
+        audio.muted = false;
+        audio.play().catch(() => {});
+      }
+    };
+    document.addEventListener('click', onFirstInteraction, { once: true, passive: true });
+    document.addEventListener('touchstart', onFirstInteraction, { once: true, passive: true });
+
+    return () => {
+      audio.removeEventListener('canplaythrough', tryPlay);
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('touchstart', onFirstInteraction);
+    };
+  }, []);
 
   const fetchWishes = async () => {
     try {
@@ -161,6 +205,20 @@ export default function App() {
 
   return (
     <div className="min-h-screen font-sans selection:bg-pink-200 selection:text-pink-900 invitation-page">
+      {/* Nhạc Happy Birthday — file public/happy-birthday.mp3 */}
+      <audio ref={audioRef} src={BIRTHDAY_MUSIC_SRC} loop preload="auto" />
+
+      {/* Nút bật/tắt nhạc (trình duyệt thường chặn autoplay, bấm để phát) */}
+      <button
+        type="button"
+        className="music-toggle"
+        onClick={() => setMusicMuted((m) => !m)}
+        title={musicMuted ? 'Phát nhạc' : 'Tắt nhạc'}
+        aria-label={musicMuted ? 'Phát nhạc' : 'Tắt nhạc'}
+      >
+        {musicMuted ? <VolumeX size={22} /> : <Volume2 size={22} />}
+      </button>
+
       {/* Bunting / Cờ trang trí */}
       <div className="bunting" aria-hidden>
         {[...Array(12)].map((_, i) => (
