@@ -21,25 +21,42 @@ View your app in AI Studio: https://ai.studio/apps/57b31d80-01e4-492a-a325-b3525
 
 ## Deploy to Vercel
 
-This project builds a static frontend (Vite) and exposes a serverless API under `/api/wishes`.
+This project builds a static frontend (Vite) and exposes a serverless API under `/api/wishes` that uses **Vercel KV** (Redis) for persistent data storage.
 
-1. Install the Vercel CLI (optional locally):
-   ```bash
-   npm i -g vercel
-   ```
-2. Ensure dependencies are installed:
+### Setup Steps
+
+1. **Enable Vercel KV in your project:**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Select your project
+   - Navigate to **Storage** tab
+   - Click **Create Database** and select **KV** 
+   - Confirm setup (Vercel will auto-populate environment variables)
+
+2. **Install dependencies locally:**
    ```bash
    npm install
    ```
-3. Build the static site:
+
+3. **Build the static site:**
    ```bash
    npm run vercel-build
    ```
-4. Deploy to Vercel:
+
+4. **Deploy to Vercel:**
    ```bash
    vercel --prod
    ```
 
-Notes:
-- The API uses a local SQLite database file `wishes.db` stored alongside functions. On Vercel serverless this storage is ephemeral across invocations; for persistent data use an external DB.
-- If you need to keep a Node server instead of serverless functions, deploy to a platform that supports long-running Node processes.
+### Why Vercel KV?
+
+- **Persistent storage** across serverless invocations (SQLite on Vercel is ephemeral).
+- **Integrated** into Vercel—no external database service needed.
+- **Auto-scales** with your traffic.
+
+### Alternative: External Database
+
+If you prefer, you can replace Vercel KV with **Supabase PostgreSQL**:
+- Install `@supabase/supabase-js`
+- Update `api/wishes.ts` to use Supabase client
+- Set `SUPABASE_URL` and `SUPABASE_ANON_KEY` env vars in Vercel dashboard
+

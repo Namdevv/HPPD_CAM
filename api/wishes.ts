@@ -1,34 +1,67 @@
-import Database from "better-sqlite3";
+import { kv } from '@vercel/kv';
 
-const db = new Database("wishes.db");
+interface Wish {
+  id: number;
+  name: string;
+  content: string;
+  created_at: string;
+}
 
-// Initialize database (safe to run multiple times)
-db.exec(`
-  CREATE TABLE IF NOT EXISTS wishes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    content TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
-
-export default function handler(req: any, res: any) {
+export default async function handler(req: any, res: any) {
   const method = req.method;
 
-  if (method === "GET") {
-    const wishes = db.prepare("SELECT * FROM wishes ORDER BY created_at DESC LIMIT 50").all();
-    return res.status(200).json(wishes);
-  }
+  try {
+    if (method === "GET") {
+      // Fetch all wishes from KV store
+      const wishIds = await kv.lrange("wishes:ids", 0, 49);
+      const wishes: Wish[] = [];
 
-  if (method === "POST") {
-    const { name, content } = req.body || {};
-    if (!content) {
-      return res.status(400).json({ error: "Nội dung lời chúc không được để trống" });
+      for (const id of wishIds) {
+        const wish = await kv.hgetall(`wish:${id}`);
+        if (wish) {
+          wishes.push({
+            id: parseInt(id as string),
+            name: (wish.name as string) || "Người ẩn danh",
+            content: wish.content as string,
+            created_at: wish.created_at as string
+          });
+        }
+      }
+
+      return res.status(200).json(wishes);
     }
-    const info = db.prepare("INSERT INTO wishes (name, content) VALUES (?, ?)").run(name || "Người ẩn danh", content);
-    return res.status(200).json({ id: info.lastInsertRowid });
-  }
 
-  res.setHeader("Allow", "GET, POST");
-  res.status(405).end("Method Not Allowed");
+    if (method === "POST") {
+      const { name, content } = req.body || {};
+      if (!content) {
+        return res.status(400).json({ error: "Nội dung lời chúc không được để trống" });
+      }
+
+      // Generate unique ID
+      const id = await kv.incr("wish:counter");
+
+      // Store wish data
+      const createdAt = new Date().toISOString();
+      await kv.hset(`wish:${id}`, {
+        id,
+        name: name || "Người ẩn danh",
+        content,
+        created_at: createdAt
+      });
+
+      // Add ID to sorted list (newest first)
+      await kv.lpush("wishes:ids", id.toString());
+
+      // Trim to keep only last 50
+      await kv.ltrim("wishes:ids", 0, 49);
+
+      return res.status(200).json({ id });
+    }
+
+    res.setHeader("Allow", "GET, POST");
+    res.status(405).end("Method Not Allowed");
+  } catch (error) {
+    console.error("API Error:", error);
+    return res.status(500).json({ error: "Lỗi server: " + (error as any).message });
+  }
 }
