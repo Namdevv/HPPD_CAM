@@ -1,3 +1,4 @@
+import "dotenv/config.js";
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import kvStore from "./api/kv-store.js";
