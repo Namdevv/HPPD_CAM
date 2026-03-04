@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X, MapPin, Volume2, VolumeX } from 'lucide-react';
+import { BirthdayStickers } from './components/BirthdayStickers';
 
-// Địa điểm tiệc — sửa địa chỉ và link Google Maps embed (lấy từ Google Maps → Chia sẻ → Nhúng bản đồ)
+// Địa điểm tiệc — tên/địa chỉ hiển thị giữ nguyên; map chấm đúng tọa độ dưới đây
 const PARTY_ADDRESS = '964/2 Lê Đức Anh, Tân Tạo, Bình Tân, TP.HCM';
-// Lấy link embed: Google Maps → Chọn địa điểm → Chia sẻ → Nhúng bản đồ → copy src của iframe
-const PARTY_MAP_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(PARTY_ADDRESS)}&output=embed`;
+const PARTY_LAT = 10.7609;
+const PARTY_LNG = 106.590565;
+const PARTY_MAP_EMBED_URL = `https://www.google.com/maps?q=${PARTY_LAT},${PARTY_LNG}&z=17&output=embed`;
 import confetti from 'canvas-confetti';
 
 // Nhạc Happy Birthday — đặt file happy-birthday.mp3 vào thư mục public/
@@ -250,6 +252,8 @@ export default function App() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
+          <BirthdayStickers />
+
           <div className="hero-layout">
             {/* Ảnh chính — thêm URL vào MY_PHOTOS.main1 khi có ảnh */}
             <motion.div
@@ -272,9 +276,9 @@ export default function App() {
                   <Cake size={28} className="text-pink-400" />
                 </span>
                 <h1 className="hero-title">
-                  Happy Birthday! <span className="hero-age">1<sup>st</sup></span>
+                  HAPPY BIRTHDAY! <span className="hero-age">1<sup>st</sup></span>
                 </h1>
-                <p className="hero-name">Baby Cam</p>
+                <p className="hero-name">Bé Cam</p>
                 <p className="hero-date">13.04.2026</p>
               </motion.div>
 
@@ -284,7 +288,7 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.45 }}
               >
-                Nhân dịp mừng thôi nôi Baby Cam
+                Nhân dịp mừng thôi nôi Bé Cam
               </motion.p>
               <motion.p
                 className="hero-invite"
@@ -358,7 +362,7 @@ export default function App() {
             </motion.h2>
             <p className="location-address">{PARTY_ADDRESS}</p>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(PARTY_ADDRESS)}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${PARTY_LAT},${PARTY_LNG}`}
               target="_blank"
               rel="noopener noreferrer"
               className="location-link"

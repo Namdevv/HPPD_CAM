@@ -252,9 +252,10 @@ body {
 
 .hero-title {
   font-family: var(--font-display);
-  font-size: clamp(1.85rem, 5vw, 2.75rem);
+  font-size: clamp(2rem, 5.5vw, 3.1rem);
   margin: 0 0 0.2rem 0;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   background: linear-gradient(135deg, #b45309 0%, #d97706 40%, #ea580c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -262,29 +263,38 @@ body {
 }
 
 .hero-age {
+  position: relative;
+  display: inline-block;
   -webkit-text-fill-color: transparent;
   background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  font-size: 1.1em;
+  font-size: 1.05em;
 }
 
 .hero-age sup {
-  font-size: 0.4em;
-  opacity: 0.9;
+  position: absolute;
+  top: -0.1em;
+  right: -0.9em;
+  font-size: 0.42em;
+  line-height: 1;
+  color: #ef4444;
+  -webkit-text-fill-color: #ef4444;
+  background: none;
+  z-index: 1;
 }
 
 .hero-name {
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 3.5vw, 1.9rem);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
   color: #1c1917;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.4rem 0;
   font-weight: 600;
 }
 
 .hero-date {
   font-family: var(--font-sans);
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #78350f;
   margin: 0;
@@ -292,16 +302,16 @@ body {
 
 .hero-subtitle {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   color: #b45309;
   margin: 0;
 }
 
 .hero-invite {
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   color: #57534e;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* Ảnh phụ nhỏ — dạng polaroid */
@@ -330,16 +340,16 @@ body {
 }
 
 .hero-blessing-main {
-  font-size: 0.98rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #78350f;
-  margin: 0 0 0.3rem 0;
-  line-height: 1.45;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.5;
 }
 
 .hero-blessing-sub {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.12rem;
   color: #b45309;
   margin: 0;
 }
@@ -365,6 +375,50 @@ body {
 .balloon-1 { background: linear-gradient(135deg, #f9a8d4 0%, #f472b6 100%); }
 .balloon-2 { background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%); }
 .balloon-3 { background: linear-gradient(135deg, #fde047 0%, #facc15 100%); }
+
+/* Sticker icon vui nhộn quanh thiệp */
+.hero-sticker {
+  position: absolute;
+  color: #f97316;
+  filter: drop-shadow(0 4px 10px rgba(248, 153, 56, 0.35));
+  pointer-events: none;
+}
+
+.hero-sticker--top-left {
+  top: -10px;
+  left: 18px;
+}
+
+.hero-sticker--top-right {
+  top: -18px;
+  right: 32px;
+  color: #facc15;
+}
+
+.hero-sticker--bottom-right {
+  bottom: 16px;
+  right: 18px;
+  color: #fb7185;
+}
+
+/* Sticker Lottie */
+.lottie-sticker {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.lottie-sticker--top-left {
+  top: -46px;
+  left: -8px;
+}
+
+.lottie-sticker--top-right {
+  top: -52px;
+  right: -10px;
+}
 
 /* Nút gửi lời chúc */
 .btn-send-wish {
@@ -496,7 +550,7 @@ body {
 }
 
 .location-address {
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #57534e;
   line-height: 1.5;
   margin: 0 0 0.75rem 0;
@@ -504,7 +558,7 @@ body {
 
 .location-link {
   display: inline-block;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #d97706;
   text-decoration: none;
