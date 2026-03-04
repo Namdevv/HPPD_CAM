@@ -37,16 +37,59 @@ class InMemoryStore {
 }
 
 const inMemoryStore = new InMemoryStore();
+let vercelKv: any = null;
+let kvLoaded = false;
 
-// Use Vercel KV if available, otherwise fallback to in-memory
-export const kvStore = process.env.KV_REST_API_URL
-  ? (
-    (() => {
-      // Lazy load Vercel KV only if env vars exist
-      const { kv } = require("@vercel/kv");
-      return kv;
-    })()
-  )
-  : inMemoryStore;
+// Lazy load Vercel KV on first use
+const initKv = async () => {
+  if (kvLoaded) return;
+  kvLoaded = true;
+  
+  if (!process.env.KV_REST_API_URL) {
+    console.log("KV_REST_API_URL not set, using in-memory store");
+    return;
+  }
+
+  try {
+    const module = await import("@vercel/kv");
+    vercelKv = module.kv;
+    console.log("Vercel KV loaded successfully");
+  } catch (e) {
+    console.warn("Failed to load Vercel KV:", (e as any).message);
+  }
+};
+
+// Return the appropriate store (KV if available, else in-memory)
+const getStore = async () => {
+  await initKv();
+  return vercelKv || inMemoryStore;
+};
+
+export const kvStore = {
+  lpush: async (key: string, ...values: string[]) => {
+    const store = await getStore();
+    return store.lpush(key, ...values);
+  },
+  lrange: async (key: string, start: number, stop: number) => {
+    const store = await getStore();
+    return store.lrange(key, start, stop);
+  },
+  ltrim: async (key: string, start: number, stop: number) => {
+    const store = await getStore();
+    return store.ltrim(key, start, stop);
+  },
+  incr: async (key: string) => {
+    const store = await getStore();
+    return store.incr(key);
+  },
+  hset: async (key: string, data: Record<string, any>) => {
+    const store = await getStore();
+    return store.hset(key, data);
+  },
+  hgetall: async (key: string) => {
+    const store = await getStore();
+    return store.hgetall(key);
+  },
+};
 
 export default kvStore;
