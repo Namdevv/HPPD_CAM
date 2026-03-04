@@ -30,10 +30,16 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* Nội dung rộng hơn — giảm khoảng trống 2 bên */
+:root {
+  --content-max: 1160px;
+  --content-padding: clamp(1rem, 3vw, 1.5rem);
+}
+
 /* ========== Trang đầu — Hero thiệp mời ========== */
 .hero-section {
-  padding: 1.5rem 1rem 4rem;
-  max-width: 920px;
+  padding: 1.5rem var(--content-padding) 4rem;
+  max-width: var(--content-max);
   margin: 0 auto;
   position: relative;
 }
@@ -379,12 +385,18 @@ body {
 
 /* Khu vực lời chúc — tăng padding-top tránh chồng lên album */
 #wishes-section.wishes-section {
-  padding: 5rem 0 4rem;
-  margin-top: 4rem;
-  scroll-margin-top: 2rem;
+  padding: 6rem var(--content-padding) 4rem;
+  margin-top: 10rem;
+  scroll-margin-top: 2.5rem;
   background: linear-gradient(180deg, rgba(254, 243, 199, 0.4) 0%, rgba(255, 251, 235, 0.9) 100%);
   position: relative;
   z-index: 1;
+}
+
+.wishes-inner {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0;
 }
 
 /* Footer */
@@ -419,17 +431,98 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Địa điểm — địa chỉ + bản đồ */
+.location-section {
+  padding: 2.5rem var(--content-padding) 3.5rem;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.location-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .location-inner {
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+  }
+}
+
+.location-header {
+  padding: 1rem 0;
+}
+
+.location-icon {
+  color: #b45309;
+  margin-bottom: 0.5rem;
+}
+
+.location-section h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  color: #b45309;
+  margin: 0 0 0.75rem 0;
+}
+
+.location-address {
+  font-size: 1rem;
+  color: #57534e;
+  line-height: 1.5;
+  margin: 0 0 0.75rem 0;
+}
+
+.location-link {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #d97706;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.location-link:hover {
+  color: #b45309;
+  text-decoration: underline;
+}
+
+.location-map-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(139, 92, 46, 0.12);
+  background: #f5f5f5;
+  min-height: 280px;
+}
+
+.location-map {
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  border: none;
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .location-map-wrap { min-height: 320px; }
+  .location-map { min-height: 320px; }
+}
+
 /* Album — Những khoảnh khắc đáng yêu (masonry + polaroid) */
 .album-section {
-  padding: 3rem 1rem 5rem;
+  padding: 3rem var(--content-padding) 5rem;
   position: relative;
   z-index: 1;
 }
 
 .album-section-inner {
-  max-width: 900px;
+  max-width: var(--content-max);
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0;
 }
 
 .album-header {

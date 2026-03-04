@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X, MapPin } from 'lucide-react';
+
+// Địa điểm tiệc — sửa địa chỉ và link Google Maps embed (lấy từ Google Maps → Chia sẻ → Nhúng bản đồ)
+const PARTY_ADDRESS = '964/2 Lê Đức Anh, Tân Tạo, Bình Tân, TP.HCM';
+// Lấy link embed: Google Maps → Chọn địa điểm → Chia sẻ → Nhúng bản đồ → copy src của iframe
+const PARTY_MAP_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(PARTY_ADDRESS)}&output=embed`;
 import confetti from 'canvas-confetti';
 
 interface Wish {
@@ -280,6 +285,48 @@ export default function App() {
         </motion.div>
       </section>
 
+      {/* Địa điểm — địa chỉ + bản đồ */}
+      <section className="location-section">
+        <div className="location-inner">
+          <div className="location-header">
+            <MapPin className="location-icon" size={28} />
+            <motion.h2
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              viewport={{ once: true }}
+            >
+              Địa điểm tổ chức
+            </motion.h2>
+            <p className="location-address">{PARTY_ADDRESS}</p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(PARTY_ADDRESS)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="location-link"
+            >
+              Xem chỉ đường trên Google Maps →
+            </a>
+          </div>
+          <motion.div
+            className="location-map-wrap"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            viewport={{ once: true }}
+          >
+            <iframe
+              title="Bản đồ địa điểm"
+              src={PARTY_MAP_EMBED_URL}
+              className="location-map"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </motion.div>
+        </div>
+      </section>
+
       {/* Những khoảnh khắc đáng yêu của bé — album */}
       <section className="album-section">
         <div className="album-section-inner">
@@ -342,7 +389,7 @@ export default function App() {
 
       {/* Khu vực gửi lời chúc */}
       <section id="wishes-section" className="wishes-section">
-        <div className="container mx-auto px-4 max-w-4xl">
+        <div className="wishes-inner">
           <div className="text-center mb-12">
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
