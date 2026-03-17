@@ -50,48 +50,118 @@ const PhotoPlaceholder = ({ id, label, src }: { id: string; label: string; src?:
   </div>
 );
 
-// Album: ảnh mẫu với seed khác nhau, kích thước lẫn lộn (small | large) cho masonry
-const ALBUM_ITEMS: { seed: string; size: 'small' | 'large' }[] = [
-  { seed: 'baby1', size: 'large' },
-  { seed: 'baby2', size: 'small' },
-  { seed: 'baby3', size: 'small' },
-  { seed: 'baby4', size: 'small' },
-  { seed: 'baby5', size: 'large' },
-  { seed: 'baby6', size: 'small' },
-  { seed: 'baby7', size: 'small' },
-  { seed: 'baby8', size: 'small' },
-  { seed: 'baby9', size: 'large' },
-  { seed: 'baby10', size: 'small' },
-  { seed: 'baby11', size: 'small' },
-  { seed: 'baby12', size: 'small' },
+// Danh sách ảnh thực từ 2 folder
+const MOISINH_PHOTOS = [
+  'z7628598912943_1504e35436af4af293459909e131150d.jpg',
+  'z7628598917040_a99f3e5e1f924b087c8599700022c907.jpg',
+  'z7628598929683_764c37233c394766eece71fa9a5345fc.jpg',
+  'z7628598938739_9633b4544dfb7bb6621cc70f2aa7dfe3.jpg',
+  'z7628598939026_4a8f4d4ad9b3fad8cf25ebfbd3f264c6.jpg',
+  'z7628598948153_3a06efff02713b0d4dda483b81692dab.jpg',
+  'z7628598955352_326ee3d6c7b22f32b731aee2e6c21ed9.jpg',
+  'z7628598959968_f7f5c6e4adcd7326dbcf730fc7728616.jpg',
+  'z7628598970333_0392d30407065b54743645a21219800d.jpg',
+  'z7628598977950_18693ce31fb3e940ae70eb12848487f5.jpg',
+  'z7628598983970_7a912799b4c6c1672330e38c1016f098.jpg',
+  'z7628598994477_c3edd8632306724750419b93b666ec08.jpg',
+  'z7628599003840_c82019d9a4265b5f8efa9b1edecc184c.jpg',
+  'z7628599013057_a7f708c6e1a37ca9be624f65ae09ebba.jpg',
+  'z7628599017726_1a186d8531e38ba1935d09d8b1980eda.jpg',
+  'z7628599018021_32b40d5ac14700fcd8255ccfd8ddce9a.jpg',
+  'z7628599033797_ae828bc89b7cef2cf622cca9c88e9b89.jpg',
+  'z7628599038850_4d70ba1d759a63a383bfa90674ddd64e.jpg',
+  'z7628599044560_28bff220864ac8d8393556976fce2bcf.jpg',
+  'z7628599053610_d3a710ff321e7e899056d1ce7e599022.jpg',
+].map(name => `/photos/moisinh/${name}`);
+
+const ONT_PHOTOS = [
+  'z7628579359672_795affd31bd7b44f35db35d276e2c3aa.jpg',
+  'z7628579363325_8eef57657cfb6ef34970a94fd10bbdbf.jpg',
+  'z7628579376506_86ec4b5dbac12340aa4f12ec7e6e400b.jpg',
+  'z7628579376699_966e3f04679fd30a18831169481f746e.jpg',
+  'z7628579388252_9f3d3ad3dc52e72f0521bd4d6bb55917.jpg',
+  'z7628579395918_0d1b3918a409d53b2fe007d4e2e65d96.jpg',
+  'z7628579401377_306e8e0d94c64d58dc21024f663ac96b.jpg',
+  'z7628579409643_23388ff1ed89d5df20143f65e74170e3.jpg',
+  'z7628579409914_e7fdea98a417ff7d25f1a79ef1653c05.jpg',
+  'z7628579419588_e5081676d52a44f70c73fedc0bbe7d15.jpg',
+  'z7628579424339_c40a80df0d6d24b3368105e63aef739c.jpg',
+  'z7628579431932_50d3fa6a92ecfb0b4681ae9f57f30af9.jpg',
+  'z7628579442883_94799308899bb25ae98fe5c48b7aacb7.jpg',
+  'z7628579445280_dd0b7731df144a14931437336347b687.jpg',
+  'z7628579454888_368201a77720891706001cfabc632bfa.jpg',
+  'z7628579460920_823d635e8b9d1adefcb94aa73729c0a5.jpg',
+  'z7628579466211_743ed599102bf3693a5b671f37fb0945.jpg',
+  'z7628579478688_8bf3010fb8bf06089f94ed5c67b0b980.jpg',
+  'z7628579478991_98efddf59294c9808a5898563a814ef2.jpg',
+  'z7628579493914_ce56d5df1b52e12b61bde4e0aa411cda.jpg',
+].map(name => `/photos/1t/${name}`);
+
+// Tính toán mốc thời gian giả lập dựa trên lượng ảnh
+// Bé sinh T4/2025, thôi nôi T4/2026.
+// Ta chia số ảnh vào các mảng mốc milestone.
+type TimelineEvent = {
+  milestone: string;
+  dateStr: string;
+  emoji: string;
+  description: string;
+  photos: string[];
+};
+
+const TIMELINE_DATA: TimelineEvent[] = [
+  {
+    milestone: "Lúc mới sinh",
+    dateStr: "Tháng 04/2025",
+    emoji: "🐣",
+    description: "Chào thế giới! Những ngày đầu tiên bên ba mẹ.",
+    photos: MOISINH_PHOTOS.slice(0, 6)
+  },
+  {
+    milestone: "Đầy tháng",
+    dateStr: "Tháng 05/2025",
+    emoji: "🍼",
+    description: "Con tròn 1 tháng tuổi, trộm vía ăn ngoan ngủ ngoan.",
+    photos: MOISINH_PHOTOS.slice(6, 12)
+  },
+  {
+    milestone: "Biết lật rồi nè",
+    dateStr: "Tháng 07/2025",
+    emoji: "🐛",
+    description: "Con được 3 tháng tuổi, bắt đầu cứng cáp và biết hóng chuyện.",
+    photos: MOISINH_PHOTOS.slice(12, 16)
+  },
+  {
+    milestone: "Ăn dặm",
+    dateStr: "Tháng 10/2025",
+    emoji: "🥣",
+    description: "Tròn 6 tháng! Hành trình khám phá mùi vị bắt đầu.",
+    photos: MOISINH_PHOTOS.slice(16, 20)
+  },
+  {
+    milestone: "Đón Tết đầu tiên",
+    dateStr: "Tháng 02/2026",
+    emoji: "🌸",
+    description: "Mùa xuân đầu tiên của con, diện áo mới đi chúc Tết.",
+    photos: ONT_PHOTOS.slice(0, 8)
+  },
+  {
+    milestone: "Photo Shoot 1 Tuổi",
+    dateStr: "Tháng 03/2026",
+    emoji: "📸",
+    description: "Đi chụp ảnh concept chuẩn bị thôi nôi, quậy tưng bừng phông nền.",
+    photos: ONT_PHOTOS.slice(8, 16)
+  },
+  {
+    milestone: "Mừng Thôi Nôi",
+    dateStr: "Tháng 04/2026",
+    emoji: "🎂",
+    description: "Happy 1st Birthday! Con chính thức tròn 1 tuổi rưỡi.",
+    photos: ONT_PHOTOS.slice(16, 20)
+  }
 ];
 
-const AlbumPhoto = ({ seed, size, onClick }: { seed: string; size: 'small' | 'large'; onClick: () => void }) => {
-  const w = size === 'large' ? 480 : 280;
-  const h = size === 'large' ? 420 : 280;
-  const src = `https://picsum.photos/seed/${seed}/${w}/${h}`;
-  return (
-    <motion.div
-      className={`album-item album-item--${size}`}
-      whileHover={{ scale: 1.02, rotate: size === 'small' ? (seed.length % 2 === 0 ? 1 : -1) : 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
-    >
-      <div className="album-photo-frame cursor-pointer">
-        <img src={src} alt={`Khoảnh khắc ${seed}`} className="album-photo-img" referrerPolicy="no-referrer" />
-      </div>
-    </motion.div>
-  );
-};
-
-// URL ảnh size lớn cho lightbox
-const getAlbumImageSrc = (seed: string, large = true) => {
-  const size = large ? '1200/900' : '800/600';
-  return `https://picsum.photos/seed/${seed}/${size}`;
-};
+// Flat array chứa TẤT CẢ các ảnh để dùng cho Lightbox (có thể ấn Next xuyên qua timeline)
+const ALL_PHOTOS_FLAT = TIMELINE_DATA.flatMap(t => t.photos);
 
 export default function App() {
   const [wishes, setWishes] = useState<Wish[]>([]);
@@ -104,7 +174,94 @@ export default function App() {
   const [lightboxDirection, setLightboxDirection] = useState<1 | -1>(1);
   const [musicMuted, setMusicMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const isUserScrollingRef = useRef(false);
+  const scrollAnimationRef = useRef<number>();
 
+  // ======= TỰ ĐỘNG CUỘN TIMELINE =======
+  useEffect(() => {
+    const el = timelineRef.current;
+    if (!el) return;
+
+    let scrollInterval: NodeJS.Timeout;
+    let resumeTimeout: NodeJS.Timeout;
+    let isInteracting = false;
+
+    const startScroll = () => {
+      clearInterval(scrollInterval);
+      // Tốc độ: 15ms cộng 1px, tương đương ~60fps
+      scrollInterval = setInterval(() => {
+        if (!isInteracting && el) {
+          el.scrollLeft += 1;
+
+          // Dừng nếu chạm rìa phải
+          if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 1) {
+            clearInterval(scrollInterval);
+          }
+        }
+      }, 15);
+    };
+
+    const stopScroll = () => {
+      clearInterval(scrollInterval);
+    };
+
+    const handleInteractionStart = () => {
+      isInteracting = true;
+      stopScroll();
+      clearTimeout(resumeTimeout);
+    };
+
+    const handleInteractionEnd = () => {
+      clearTimeout(resumeTimeout);
+      // Tự động cuộn lại sau 2 giây
+      resumeTimeout = setTimeout(() => {
+        isInteracting = false;
+        startScroll();
+      }, 2000);
+    };
+
+    // Khi cuộn tới phần Timeline mới kích hoạt scroll
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        isInteracting = false;
+        startScroll();
+      } else {
+        stopScroll();
+      }
+    }, { threshold: 0.1 });
+
+    observer.observe(el);
+
+    // Chuột
+    el.addEventListener('mouseenter', handleInteractionStart);
+    el.addEventListener('mouseleave', handleInteractionEnd);
+    // Cảm ứng
+    el.addEventListener('touchstart', handleInteractionStart, { passive: true });
+    el.addEventListener('touchend', handleInteractionEnd);
+    // Con lăn chuột
+    el.addEventListener('wheel', handleInteractionStart, { passive: true });
+    let wheelTimeout: NodeJS.Timeout;
+    const handleWheelEnd = () => {
+      clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(handleInteractionEnd, 300);
+    };
+    el.addEventListener('wheel', handleWheelEnd, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      stopScroll();
+      clearTimeout(resumeTimeout);
+      clearTimeout(wheelTimeout);
+      el.removeEventListener('mouseenter', handleInteractionStart);
+      el.removeEventListener('mouseleave', handleInteractionEnd);
+      el.removeEventListener('touchstart', handleInteractionStart);
+      el.removeEventListener('touchend', handleInteractionEnd);
+      el.removeEventListener('wheel', handleInteractionStart);
+      el.removeEventListener('wheel', handleWheelEnd);
+    };
+  }, []);
+  // ======================================
   useEffect(() => {
     fetchWishes();
   }, []);
@@ -136,7 +293,7 @@ export default function App() {
     const tryPlay = () => {
       if (!audio.paused) return;
       audio.muted = musicMuted;
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
     };
 
     tryPlay();
@@ -146,7 +303,7 @@ export default function App() {
       setMusicMuted(false);
       if (audio.paused) {
         audio.muted = false;
-        audio.play().catch(() => {});
+        audio.play().catch(() => { });
       }
     };
     document.addEventListener('click', onFirstInteraction, { once: true, passive: true });
@@ -389,47 +546,96 @@ export default function App() {
         </div>
       </section>
 
-      {/* Những khoảnh khắc đáng yêu của bé — album */}
-      <section className="album-section">
-        <div className="album-section-inner">
-          <div className="text-center album-header">
-            <div className="w-20 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full mx-auto mb-4" />
-            <motion.h2
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              Những khoảnh khắc đáng yêu của bé
-            </motion.h2>
-            <p className="text-gray-600 text-sm mt-2 max-w-md mx-auto">Lật qua và xem từng kỷ niệm nhé ✨</p>
-          </div>
-          <motion.div
-            className="album-masonry"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+      <section className="timeline-section">
+        <div className="text-center album-header px-4 mb-10">
+          <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent rounded-full mx-auto mb-6" />
+          <motion.h2
+            initial={{ opacity: 0, y: 8 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            viewport={{ once: true, margin: "-40px" }}
+            className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-amber-700 leading-tight"
           >
-            {ALBUM_ITEMS.map((item, i) => (
-              <motion.div
-                key={item.seed}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.35 }}
-                viewport={{ once: true }}
-              >
-                <AlbumPhoto
-                  seed={item.seed}
-                  size={item.size}
-                  onClick={() => {
-                    setLightboxIndex(i);
-                    setLightboxDirection(1);
-                    setLightboxOpen(true);
-                  }}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+            Hành trình lớn khôn của bé Cam 🌟
+          </motion.h2>
+          <p className="text-gray-600 text-base sm:text-lg md:text-xl mt-3 max-w-2xl mx-auto">Cuộn ngang để xem quá trình lớn lên từng ngày ✨</p>
+        </div>
+
+        {/* Nút điều hướng cuộn timeline */}
+        <div className="flex justify-center gap-4 mt-6 mb-4 px-4 sticky left-0 z-10 w-full pointer-events-none">
+          <button
+            onClick={() => {
+              if (timelineRef.current) timelineRef.current.scrollBy({ left: -350, behavior: 'smooth' });
+            }}
+            className="pointer-events-auto bg-white/90 backdrop-blur border border-amber-200 text-amber-600 p-3 rounded-full shadow-[0_4px_12px_rgba(245,158,11,0.2)] hover:bg-amber-50 hover:scale-110 active:scale-95 transition-all"
+            aria-label="Cuộn trái"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={() => {
+              if (timelineRef.current) timelineRef.current.scrollBy({ left: 350, behavior: 'smooth' });
+            }}
+            className="pointer-events-auto bg-white/90 backdrop-blur border border-amber-200 text-amber-600 p-3 rounded-full shadow-[0_4px_12px_rgba(245,158,11,0.2)] hover:bg-amber-50 hover:scale-110 active:scale-95 transition-all"
+            aria-label="Cuộn phải"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
+
+        {/* Vùng Timeline cuộn ngang */}
+        <div className="timeline-scroll-container" ref={timelineRef}>
+          <div className="timeline-track">
+            {/* Đường line chạy dọc toàn bộ timeline ngang */}
+            <div className="timeline-line"></div>
+
+            {TIMELINE_DATA.map((event, eventIdx) => {
+              // Tìm chỉ số cùa tấm ảnh đầu tiên trong ALL_PHOTOS_FLAT
+              let cumulativeIdx = 0;
+              for (let i = 0; i < eventIdx; i++) {
+                cumulativeIdx += TIMELINE_DATA[i].photos.length;
+              }
+
+              return (
+                <div key={eventIdx} className="timeline-milestone">
+                  {/* Point trên trục thời gian */}
+                  <div className="timeline-point">
+                    <span className="timeline-point-emoji">{event.emoji}</span>
+                  </div>
+
+                  {/* Nội dung text mốc thời gian */}
+                  <div className="timeline-content">
+                    <div className="timeline-date">{event.dateStr}</div>
+                    <div className="timeline-title">{event.milestone}</div>
+                    <div className="timeline-desc">{event.description}</div>
+                  </div>
+
+                  {/* Grid ảnh của mốc thời gian đó */}
+                  <div className={`timeline-photos grid-${Math.min(event.photos.length, 4)}`}>
+                    {event.photos.map((photoSrc, pIdx) => {
+                      const absoluteIdx = cumulativeIdx + pIdx;
+                      return (
+                        <motion.div
+                          key={pIdx}
+                          className="timeline-photo-card"
+                          whileHover={{ scale: 1.04, rotate: (pIdx % 2 === 0 ? 1 : -1) }}
+                          onClick={() => {
+                            setLightboxIndex(absoluteIdx);
+                            setLightboxDirection(1);
+                            setLightboxOpen(true);
+                          }}
+                        >
+                          <img src={photoSrc} alt={event.milestone} loading="lazy" />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Padding mốc cuối cùng */}
+            <div className="timeline-end-pad w-[100px] shrink-0"></div>
+          </div>
         </div>
       </section>
 
@@ -604,9 +810,8 @@ export default function App() {
                     transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
                   >
                     <img
-                      src={getAlbumImageSrc(ALBUM_ITEMS[lightboxIndex].seed)}
+                      src={ALL_PHOTOS_FLAT[lightboxIndex]}
                       alt={`Khoảnh khắc ${lightboxIndex + 1}`}
-                      referrerPolicy="no-referrer"
                     />
                   </motion.div>
                 </AnimatePresence>
@@ -619,14 +824,14 @@ export default function App() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxDirection(-1);
-                    setLightboxIndex((prev) => (prev <= 0 ? ALBUM_ITEMS.length - 1 : prev - 1));
+                    setLightboxIndex((prev) => (prev <= 0 ? ALL_PHOTOS_FLAT.length - 1 : prev - 1));
                   }}
                   aria-label="Ảnh trước"
                 >
                   <ChevronLeft size={36} />
                 </button>
                 <span className="lightbox-counter">
-                  {lightboxIndex + 1} / {ALBUM_ITEMS.length}
+                  {lightboxIndex + 1} / {ALL_PHOTOS_FLAT.length}
                 </span>
                 <button
                   type="button"
@@ -634,7 +839,7 @@ export default function App() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxDirection(1);
-                    setLightboxIndex((prev) => (prev >= ALBUM_ITEMS.length - 1 ? 0 : prev + 1));
+                    setLightboxIndex((prev) => (prev >= ALL_PHOTOS_FLAT.length - 1 ? 0 : prev + 1));
                   }}
                   aria-label="Ảnh sau"
                 >
@@ -648,14 +853,14 @@ export default function App() {
 
       {/* Footer — nhắc lại lời chúc cuối */}
       <footer className="footer-invitation">
-        <div className="flex items-center justify-center gap-4 mb-4">
-          <div className="w-12 h-px bg-gray-200" />
-          <Heart size={24} className="text-pink-300" fill="currentColor" />
-          <div className="w-12 h-px bg-gray-200" />
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <div className="w-16 h-px bg-gray-200" />
+          <Heart size={28} className="text-pink-400" fill="currentColor" />
+          <div className="w-16 h-px bg-gray-200" />
         </div>
-        <p className="text-gray-600 text-sm font-medium">Sự có mặt của quý vị là lời chúc tốt đẹp nhất dành cho bé!</p>
-        <p className="text-gray-500 text-xs mt-2">mừng thôi nôi bé Cam · 13.04.2026</p>
-        <p className="text-gray-400 text-xs mt-3 italic">Made with love for Baby Cam</p>
+        <p className="text-gray-700 text-lg sm:text-xl font-bold px-4">Sự có mặt của quý vị là lời chúc tốt đẹp nhất dành cho bé!</p>
+        <p className="text-gray-500 text-base sm:text-lg mt-3 font-medium">mừng thôi nôi bé Cam · 13.04.2026</p>
+        <p className="text-gray-400 text-sm mt-4 italic">Made with love for Baby Cam</p>
       </footer>
 
       <style>{`
