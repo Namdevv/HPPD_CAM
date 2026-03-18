@@ -456,7 +456,7 @@ export default function App() {
                 Trân trọng kính mời quý khách đến tham dự buổi tiệc cùng gia đình chúng tôi tại tư gia.
               </motion.p>
 
-              {/* Ảnh phụ nhỏ — thêm MY_PHOTOS.main2 khi có */}
+              {/* Ảnh phụ nhỏ — thêm MY_PHOTOS.main2 khi có
               <motion.div
                 className="hero-photo-accent"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -464,7 +464,7 @@ export default function App() {
                 transition={{ delay: 0.5 }}
               >
                 <PhotoPlaceholder id="photo2" label="Ảnh bé" src={MY_PHOTOS.main2} />
-              </motion.div>
+              </motion.div> */}
 
               {/* Lời chúc cuối — giữ nguyên */}
               <motion.div
