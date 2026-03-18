@@ -50,56 +50,10 @@ const PhotoPlaceholder = ({ id, label, src }: { id: string; label: string; src?:
   </div>
 );
 
-// Danh sách ảnh thực từ 2 folder
-const MOISINH_PHOTOS = [
-  'z7628598912943_1504e35436af4af293459909e131150d.jpg',
-  'z7628598917040_a99f3e5e1f924b087c8599700022c907.jpg',
-  'z7628598929683_764c37233c394766eece71fa9a5345fc.jpg',
-  'z7628598938739_9633b4544dfb7bb6621cc70f2aa7dfe3.jpg',
-  'z7628598939026_4a8f4d4ad9b3fad8cf25ebfbd3f264c6.jpg',
-  'z7628598948153_3a06efff02713b0d4dda483b81692dab.jpg',
-  'z7628598955352_326ee3d6c7b22f32b731aee2e6c21ed9.jpg',
-  'z7628598959968_f7f5c6e4adcd7326dbcf730fc7728616.jpg',
-  'z7628598970333_0392d30407065b54743645a21219800d.jpg',
-  'z7628598977950_18693ce31fb3e940ae70eb12848487f5.jpg',
-  'z7628598983970_7a912799b4c6c1672330e38c1016f098.jpg',
-  'z7628598994477_c3edd8632306724750419b93b666ec08.jpg',
-  'z7628599003840_c82019d9a4265b5f8efa9b1edecc184c.jpg',
-  'z7628599013057_a7f708c6e1a37ca9be624f65ae09ebba.jpg',
-  'z7628599017726_1a186d8531e38ba1935d09d8b1980eda.jpg',
-  'z7628599018021_32b40d5ac14700fcd8255ccfd8ddce9a.jpg',
-  'z7628599033797_ae828bc89b7cef2cf622cca9c88e9b89.jpg',
-  'z7628599038850_4d70ba1d759a63a383bfa90674ddd64e.jpg',
-  'z7628599044560_28bff220864ac8d8393556976fce2bcf.jpg',
-  'z7628599053610_d3a710ff321e7e899056d1ce7e599022.jpg',
-].map(name => `/photos/moisinh/${name}`);
-
-const ONT_PHOTOS = [
-  'z7628579359672_795affd31bd7b44f35db35d276e2c3aa.jpg',
-  'z7628579363325_8eef57657cfb6ef34970a94fd10bbdbf.jpg',
-  'z7628579376506_86ec4b5dbac12340aa4f12ec7e6e400b.jpg',
-  'z7628579376699_966e3f04679fd30a18831169481f746e.jpg',
-  'z7628579388252_9f3d3ad3dc52e72f0521bd4d6bb55917.jpg',
-  'z7628579395918_0d1b3918a409d53b2fe007d4e2e65d96.jpg',
-  'z7628579401377_306e8e0d94c64d58dc21024f663ac96b.jpg',
-  'z7628579409643_23388ff1ed89d5df20143f65e74170e3.jpg',
-  'z7628579409914_e7fdea98a417ff7d25f1a79ef1653c05.jpg',
-  'z7628579419588_e5081676d52a44f70c73fedc0bbe7d15.jpg',
-  'z7628579424339_c40a80df0d6d24b3368105e63aef739c.jpg',
-  'z7628579431932_50d3fa6a92ecfb0b4681ae9f57f30af9.jpg',
-  'z7628579442883_94799308899bb25ae98fe5c48b7aacb7.jpg',
-  'z7628579445280_dd0b7731df144a14931437336347b687.jpg',
-  'z7628579454888_368201a77720891706001cfabc632bfa.jpg',
-  'z7628579460920_823d635e8b9d1adefcb94aa73729c0a5.jpg',
-  'z7628579466211_743ed599102bf3693a5b671f37fb0945.jpg',
-  'z7628579478688_8bf3010fb8bf06089f94ed5c67b0b980.jpg',
-  'z7628579478991_98efddf59294c9808a5898563a814ef2.jpg',
-  'z7628579493914_ce56d5df1b52e12b61bde4e0aa411cda.jpg',
-].map(name => `/photos/1t/${name}`);
-
+// Đã gộp tất cả ảnh vào chung 1 folder: public/photos/timeline
+// Bạn có thể dễ dàng thay đổi, thêm hoặc bớt ảnh trực tiếp trong phần 'photos' của từng giai đoạn dưới đây.
 // Tính toán mốc thời gian giả lập dựa trên lượng ảnh
 // Bé sinh T4/2025, thôi nôi T4/2026.
-// Ta chia số ảnh vào các mảng mốc milestone.
 type TimelineEvent = {
   milestone: string;
   dateStr: string;
@@ -114,49 +68,103 @@ const TIMELINE_DATA: TimelineEvent[] = [
     dateStr: "Tháng 04/2025",
     emoji: "🐣",
     description: "Chào thế giới! Những ngày đầu tiên bên ba mẹ.",
-    photos: MOISINH_PHOTOS.slice(0, 6)
+    photos: [
+      // --- Ảnh giai đoạn: Lúc mới sinh ---
+      '/photos/timeline/z7628598912943_1504e35436af4af293459909e131150d.jpg',
+      '/photos/timeline/z7628598917040_a99f3e5e1f924b087c8599700022c907.jpg',
+      '/photos/timeline/z7628598929683_764c37233c394766eece71fa9a5345fc.jpg',
+      '/photos/timeline/z7628598938739_9633b4544dfb7bb6621cc70f2aa7dfe3.jpg',
+      '/photos/timeline/z7628598939026_4a8f4d4ad9b3fad8cf25ebfbd3f264c6.jpg',
+      '/photos/timeline/z7628598948153_3a06efff02713b0d4dda483b81692dab.jpg',
+    ]
   },
   {
     milestone: "Đầy tháng",
     dateStr: "Tháng 05/2025",
     emoji: "🍼",
     description: "Con tròn 1 tháng tuổi, trộm vía ăn ngoan ngủ ngoan.",
-    photos: MOISINH_PHOTOS.slice(6, 12)
+    photos: [
+      // --- Ảnh giai đoạn: Đầy tháng ---
+      '/photos/timeline/z7628598955352_326ee3d6c7b22f32b731aee2e6c21ed9.jpg',
+      '/photos/timeline/z7628598959968_f7f5c6e4adcd7326dbcf730fc7728616.jpg',
+      '/photos/timeline/z7628598970333_0392d30407065b54743645a21219800d.jpg',
+      '/photos/timeline/z7628598977950_18693ce31fb3e940ae70eb12848487f5.jpg',
+      '/photos/timeline/z7628598983970_7a912799b4c6c1672330e38c1016f098.jpg',
+      '/photos/timeline/z7628598994477_c3edd8632306724750419b93b666ec08.jpg',
+    ]
   },
   {
     milestone: "Biết lật rồi nè",
     dateStr: "Tháng 07/2025",
     emoji: "🐛",
     description: "Con được 3 tháng tuổi, bắt đầu cứng cáp và biết hóng chuyện.",
-    photos: MOISINH_PHOTOS.slice(12, 16)
+    photos: [
+      // --- Ảnh giai đoạn: Biết lật ---
+      '/photos/timeline/z7628599003840_c82019d9a4265b5f8efa9b1edecc184c.jpg',
+      '/photos/timeline/z7628599013057_a7f708c6e1a37ca9be624f65ae09ebba.jpg',
+      '/photos/timeline/z7628599017726_1a186d8531e38ba1935d09d8b1980eda.jpg',
+      '/photos/timeline/z7628599018021_32b40d5ac14700fcd8255ccfd8ddce9a.jpg',
+      '/photos/timeline/z7628599044560_28bff220864ac8d8393556976fce2bcf.jpg', // ảnh chưa sử dụng ở code cũ
+      '/photos/timeline/z7628599053610_d3a710ff321e7e899056d1ce7e599022.jpg', // ảnh chưa sử dụng ở code cũ
+    ]
   },
   {
     milestone: "Ăn dặm",
     dateStr: "Tháng 10/2025",
     emoji: "🥣",
     description: "Tròn 6 tháng! Hành trình khám phá mùi vị bắt đầu.",
-    photos: MOISINH_PHOTOS.slice(16, 20)
+    photos: [
+      // --- Ảnh giai đoạn: Ăn dặm ---
+      '/photos/timeline/z7628599033797_ae828bc89b7cef2cf622cca9c88e9b89.jpg',
+      '/photos/timeline/z7628579466211_743ed599102bf3693a5b671f37fb0945.jpg',
+      '/photos/timeline/z7628579478688_8bf3010fb8bf06089f94ed5c67b0b980.jpg',
+      '/photos/timeline/z7628599038850_4d70ba1d759a63a383bfa90674ddd64e.jpg',
+
+
+    ]
   },
   {
     milestone: "Đón Tết đầu tiên",
     dateStr: "Tháng 02/2026",
     emoji: "🌸",
     description: "Mùa xuân đầu tiên của con, diện áo mới đi chúc Tết.",
-    photos: ONT_PHOTOS.slice(0, 8)
+    photos: [
+      // --- Ảnh giai đoạn: Đón Tết đầu tiên ---
+      '/photos/timeline/z7628579388252_9f3d3ad3dc52e72f0521bd4d6bb55917.jpg',
+      '/photos/timeline/z7628579409643_23388ff1ed89d5df20143f65e74170e3.jpg',
+      '/photos/timeline/z7628579409914_e7fdea98a417ff7d25f1a79ef1653c05.jpg',
+      '/photos/timeline/z7628579419588_e5081676d52a44f70c73fedc0bbe7d15.jpg',
+      '/photos/timeline/z7628579424339_c40a80df0d6d24b3368105e63aef739c.jpg',
+      '/photos/timeline/z7628579431932_50d3fa6a92ecfb0b4681ae9f57f30af9.jpg',
+    ]
   },
   {
     milestone: "Photo Shoot 1 Tuổi",
     dateStr: "Tháng 03/2026",
     emoji: "📸",
     description: "Đi chụp ảnh concept chuẩn bị thôi nôi, quậy tưng bừng phông nền.",
-    photos: ONT_PHOTOS.slice(8, 16)
+    photos: [
+      // --- Ảnh giai đoạn: Photo Shoot 1 Tuổi ---
+      '/photos/timeline/z7628579442883_94799308899bb25ae98fe5c48b7aacb7.jpg',
+      '/photos/timeline/z7628579445280_dd0b7731df144a14931437336347b687.jpg',
+      '/photos/timeline/z7628579454888_368201a77720891706001cfabc632bfa.jpg',
+      '/photos/timeline/z7628579460920_823d635e8b9d1adefcb94aa73729c0a5.jpg',
+      '/photos/timeline/z7628579478991_98efddf59294c9808a5898563a814ef2.jpg',
+      '/photos/timeline/z7628579493914_ce56d5df1b52e12b61bde4e0aa411cda.jpg',
+    ]
   },
   {
     milestone: "Mừng Thôi Nôi",
     dateStr: "Tháng 04/2026",
     emoji: "🎂",
-    description: "Happy 1st Birthday! Con chính thức tròn 1 tuổi rưỡi.",
-    photos: ONT_PHOTOS.slice(16, 20)
+    description: "Happy 1st Birthday! Con chính thức tròn 1 tuổi.",
+    photos: [
+      // --- Ảnh giai đoạn: Mừng Thôi Nôi ---
+      '/photos/timeline/z7628579359672_795affd31bd7b44f35db35d276e2c3aa.jpg',
+      '/photos/timeline/z7628579363325_8eef57657cfb6ef34970a94fd10bbdbf.jpg',
+      '/photos/timeline/z7628579376506_86ec4b5dbac12340aa4f12ec7e6e400b.jpg',
+      '/photos/timeline/z7628579376699_966e3f04679fd30a18831169481f746e.jpg',
+    ]
   }
 ];
 
