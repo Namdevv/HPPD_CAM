@@ -435,7 +435,7 @@ export default function App() {
                 <h1 className="hero-title">
                   HAPPY BIRTHDAY! <span className="hero-age">1<sup>st</sup></span>
                 </h1>
-                <p className="hero-name">Bé Cam</p>
+                <p className="hero-name">Phạm Trần Minh Hoàng (Cam)</p>
                 <p className="hero-date">13.04.2026</p>
               </motion.div>
 
