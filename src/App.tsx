@@ -494,13 +494,13 @@ export default function App() {
           transition={{ delay: 0.9 }}
           className="mt-10 text-center"
         >
-          <button
+          {/* <button
             type="button"
             onClick={() => document.getElementById('wishes-section')?.scrollIntoView({ behavior: 'smooth' })}
             className="btn-send-wish"
           >
             Gửi lời chúc cho bé <Heart size={20} className="inline-block ml-1" />
-          </button>
+          </button> */}
         </motion.div>
       </section>
 
