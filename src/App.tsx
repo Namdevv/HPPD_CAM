@@ -130,12 +130,10 @@ const TIMELINE_DATA: TimelineEvent[] = [
     description: "Mùa xuân đầu tiên của con, diện áo mới đi chúc Tết.",
     photos: [
       // --- Ảnh giai đoạn: Đón Tết đầu tiên ---
-      '/photos/timeline/z7628579388252_9f3d3ad3dc52e72f0521bd4d6bb55917.jpg',
-      '/photos/timeline/z7628579409643_23388ff1ed89d5df20143f65e74170e3.jpg',
-      '/photos/timeline/z7628579409914_e7fdea98a417ff7d25f1a79ef1653c05.jpg',
-      '/photos/timeline/z7628579419588_e5081676d52a44f70c73fedc0bbe7d15.jpg',
-      '/photos/timeline/z7628579424339_c40a80df0d6d24b3368105e63aef739c.jpg',
-      '/photos/timeline/z7628579431932_50d3fa6a92ecfb0b4681ae9f57f30af9.jpg',
+      '/photos/timeline/tetholyday1.jpg',
+      '/photos/timeline/tetholyday2.jpg',
+      '/photos/timeline/tetholyday3.jpg',
+      '/photos/timeline/tetholyday4.jpg',
     ]
   },
   {
