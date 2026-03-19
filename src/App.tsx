@@ -459,7 +459,7 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.55 }}
               >
-                Trân trọng kính mời quý khách đến tham dự buổi tiệc cùng gia đình chúng tôi tại tư gia.
+                Trân trọng kính mời quý khách đến tham dự buổi tiệc cùng gia đình chúng tôi tại <span className="text-2xl font-bold uppercase">Tư gia</span>.
               </motion.p>
 
               {/* Ảnh phụ nhỏ — thêm MY_PHOTOS.main2 khi có
