@@ -677,6 +677,7 @@ body {
 .timeline-track {
   display: flex;
   align-items: flex-start;
+  gap: 5rem; /* Tăng khoảng cách giữa các mốc thời gian */
   padding: 0 max(1rem, calc((100vw - 1160px) / 2 + 1rem));
   position: relative;
   min-width: max-content;
@@ -696,8 +697,8 @@ body {
 
 .timeline-milestone {
   position: relative;
-  width: clamp(300px, 85vw, 480px);
-  padding-right: 2.5rem;
+  width: clamp(320px, 85vw, 480px);
+  padding-right: 1rem;
   flex-shrink: 0;
   scroll-margin-left: max(1rem, calc((100vw - 1160px) / 2 + 1rem));
 }
