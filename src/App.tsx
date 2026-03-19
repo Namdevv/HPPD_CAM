@@ -30,7 +30,7 @@ const SUGGESTED_WISHES = [
 
 // Ảnh của bé — thêm URL vào đây khi có (vd: main1: '/photo1.jpg')
 const MY_PHOTOS = {
-  main1: '/photos/main-1.jpg',
+  main1: 'public/hppd1.jpg',
   main2: undefined as string | undefined,
 };
 
