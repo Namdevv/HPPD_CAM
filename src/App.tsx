@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Camera, MessageCircle, Send, Sparkles, Star, Cake, ChevronLeft, ChevronRight, X, MapPin, Volume2, VolumeX } from 'lucide-react';
+import {
+  Heart,
+  Camera,
+  MessageCircle,
+  Send,
+  Sparkles,
+  Star,
+  Cake,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  MapPin,
+  Volume2,
+  VolumeX,
+  PartyPopper,
+  Hand,
+  type LucideIcon,
+} from 'lucide-react';
 import { BirthdayStickers } from './components/BirthdayStickers';
 
 // Địa điểm tiệc — tên/địa chỉ hiển thị giữ nguyên; map chấm đúng tọa độ dưới đây
@@ -168,6 +185,45 @@ const TIMELINE_DATA: TimelineEvent[] = [
 
 // Flat array chứa TẤT CẢ các ảnh để dùng cho Lightbox (có thể ấn Next xuyên qua timeline)
 const ALL_PHOTOS_FLAT = TIMELINE_DATA.flatMap(t => t.photos);
+
+// ===== Lịch trình sự kiện trong ngày =====
+// Bạn có thể tự chỉnh sửa giờ, tiêu đề và mô tả bên dưới!
+const EVENT_SCHEDULE: {
+  time: string;
+  title: string;
+  desc: string;
+  color: string;
+  Icon: LucideIcon;
+}[] = [
+  {
+    time: '17:30 – 18:00',
+    title: 'Đón khách',
+    desc: 'Gia đình và bạn bè đến chúc mừng sinh nhật đầu đời của bé Cam.',
+    color: '#f9a8d4',
+    Icon: PartyPopper,
+  },
+  {
+    time: '18:00 – 18:30',
+    title: 'Chụp ảnh kỷ niệm',
+    desc: 'Cùng nhau lưu giữ những khoảnh khắc đáng nhớ bên bé Cam.',
+    color: '#facc15',
+    Icon: Camera,
+  },
+  {
+    time: '18:30 – 21:00',
+    title: 'Tiệc mừng cùng gia đình',
+    desc: 'Cùng nhau thưởng thức bữa tiệc ấm áp, vui vẻ bên gia đình và bạn bè.',
+    color: '#4ade80',
+    Icon: Cake,
+  },
+  {
+    time: '22:00',
+    title: 'Tiễn khách & chia vui',
+    desc: 'Xin cảm ơn tất cả đã dành thời gian quý báu đến chúc mừng bé Cam!',
+    color: '#a78bfa',
+    Icon: Hand,
+  },
+];
 
 export default function App() {
   const [wishes, setWishes] = useState<Wish[]>([]);
@@ -549,6 +605,82 @@ export default function App() {
               referrerPolicy="no-referrer-when-downgrade"
             />
           </motion.div>
+        </div>
+      </section>
+
+      {/* ====== Lịch trình sự kiện trong ngày ====== */}
+      <section className="event-schedule-section" aria-labelledby="event-schedule-heading">
+        <div className="event-schedule-inner">
+          <div className="event-schedule-header text-center">
+            <div className="w-24 h-1.5 bg-gradient-to-r from-transparent via-pink-400 to-transparent rounded-full mx-auto mb-6" />
+            <motion.h2
+              id="event-schedule-heading"
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              viewport={{ once: true }}
+              className="text-[clamp(1.35rem,4.5vw,3rem)] sm:text-4xl md:text-5xl font-display font-bold text-amber-800 leading-tight px-1"
+            >
+              Lịch trình sự kiện
+            </motion.h2>
+            <p className="text-stone-600 text-base sm:text-lg md:text-xl mt-3 max-w-xl mx-auto leading-relaxed px-2">
+              Chương trình tiệc thôi nôi bé Cam
+            </p>
+          </div>
+
+          <div className="event-schedule-list">
+            <div className="event-schedule-line" aria-hidden />
+            <ol className="event-schedule-items">
+            {EVENT_SCHEDULE.map((ev, idx) => {
+              const Icon = ev.Icon;
+              return (
+                <motion.li
+                  key={idx}
+                  className="event-card"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.45, delay: idx * 0.08, ease: 'easeOut' }}
+                  viewport={{ once: true, amount: 0.25 }}
+                >
+                  <div className="event-card-meta">
+                    <div className="event-card-time">
+                      <span className="event-time-text">{ev.time}</span>
+                    </div>
+                    <div className="event-card-dot-wrap">
+                      <motion.div
+                        className="event-card-dot"
+                        style={{ background: ev.color, borderColor: ev.color }}
+                        initial={false}
+                        whileInView={{ scale: [0, 1.2, 1] }}
+                        transition={{ duration: 0.35, delay: idx * 0.08 + 0.15 }}
+                        viewport={{ once: true }}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className="event-card-body-wrap"
+                    style={{ ['--event-accent' as string]: ev.color }}
+                  >
+                    <motion.div
+                      className="event-card-body"
+                      whileHover={{ y: -2, boxShadow: '0 14px 36px rgba(120,53,15,0.12)' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                    >
+                      <span className="event-card-icon-wrap" aria-hidden>
+                        <Icon className="event-card-icon" strokeWidth={1.75} />
+                      </span>
+                      <div className="event-card-text min-w-0">
+                        <p className="event-card-title">{ev.title}</p>
+                        <p className="event-card-desc">{ev.desc}</p>
+                      </div>
+                    </motion.div>
+                  </div>
+                </motion.li>
+              );
+            })}
+            </ol>
+          </div>
         </div>
       </section>
 

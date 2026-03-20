@@ -954,3 +954,334 @@ body {
   padding: 0.4rem 1rem;
   border-radius: 20px;
 }
+
+/* ========== Lịch Trình Sự Kiện — Event Schedule Timeline ========== */
+.event-schedule-section {
+  padding: 3rem max(var(--content-padding), env(safe-area-inset-left, 0px)) 3.5rem max(var(--content-padding), env(safe-area-inset-right, 0px));
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.event-schedule-inner {
+  max-width: min(42rem, 100%);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.event-schedule-header {
+  margin-bottom: clamp(1.75rem, 5vw, 3rem);
+}
+
+/* Khối bọc đường dọc + danh sách */
+.event-schedule-list {
+  position: relative;
+  --es-time-col: 5.75rem;
+  --es-dot-col: 2.75rem;
+}
+
+/* Đường dọc — chỉ tablet/desktop; mobile dùng viền trái thẻ */
+.event-schedule-line {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: calc(var(--es-time-col) + var(--es-dot-col) / 2 - 1.5px);
+  width: 3px;
+  background: linear-gradient(180deg, #f9a8d4 0%, #fde047 25%, #86efac 50%, #a5b4fc 75%, #c4b5fd 100%);
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.event-schedule-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 4vw, 1.75rem);
+}
+
+/* Desktop: 3 cột — giờ | chấm | thẻ (meta dùng display:contents) */
+.event-card {
+  display: grid;
+  grid-template-columns: var(--es-time-col) var(--es-dot-col) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0;
+}
+
+.event-card-meta {
+  display: contents;
+}
+
+.event-card-time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.35rem;
+  min-width: 0;
+}
+
+.event-time-text {
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #92400e;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  border-radius: 12px;
+  padding: 0.45rem 0.6rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.12);
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-align: right;
+  max-width: 100%;
+}
+
+.event-card-dot-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.event-card-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid;
+  box-shadow: 0 0 0 4px rgba(255, 253, 245, 0.95), 0 4px 12px rgba(120, 53, 15, 0.12);
+  flex-shrink: 0;
+}
+
+.event-card-body-wrap {
+  min-width: 0;
+}
+
+.event-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 18px;
+  padding: 1rem 1.15rem;
+  box-shadow:
+    0 4px 20px rgba(120, 53, 15, 0.07),
+    0 1px 3px rgba(120, 53, 15, 0.06);
+  margin-left: 0.65rem;
+  cursor: default;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  min-height: 4.5rem;
+}
+
+.event-card-icon-wrap {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(254, 243, 199, 0.55);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-card-icon {
+  width: 22px;
+  height: 22px;
+  color: color-mix(in srgb, var(--event-accent, #92400e) 82%, #292524);
+}
+
+.event-card-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-weight: 700;
+  color: #451a03;
+  margin: 0 0 0.35rem 0;
+  line-height: 1.25;
+}
+
+/* Body ≥ 16px trên mobile — độ tương phản tốt hơn */
+.event-card-desc {
+  font-size: clamp(1rem, 2.4vw, 1.0625rem);
+  color: #57534e;
+  margin: 0;
+  line-height: 1.55;
+}
+
+@media (max-width: 639px) {
+  .event-schedule-line {
+    display: none;
+  }
+
+  .event-card {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .event-card-meta {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .event-card-time {
+    justify-content: flex-start;
+    flex: 1;
+    min-width: 0;
+    padding-right: 0;
+  }
+
+  .event-time-text {
+    white-space: normal;
+    text-align: left;
+    font-size: 1rem;
+    padding: 0.5rem 0.7rem;
+    word-break: break-word;
+  }
+
+  .event-card-dot-wrap {
+    flex-shrink: 0;
+  }
+
+  .event-card-body-wrap {
+    width: 100%;
+  }
+
+  .event-card-body {
+    margin-left: 0;
+    border-left: 4px solid var(--event-accent, #f9a8d4);
+    padding-left: 1rem;
+  }
+
+  .event-card-icon-wrap {
+    width: 48px;
+    height: 48px;
+  }
+
+  .event-card-icon {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-card-body {
+    transition: none;
+  }
+}
+
+/* —— Desktop / tablet ngang: bố cục rộng như màn PC (giờ | đường+chấm | thẻ) —— */
+@media (min-width: 640px) {
+  .event-schedule-inner {
+    max-width: min(52rem, 100%);
+  }
+
+  .event-schedule-list {
+    --es-time-col: 8.5rem;
+    --es-dot-col: 3.5rem;
+  }
+
+  .event-schedule-items {
+    gap: 2.25rem;
+  }
+
+  .event-schedule-line {
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 6px;
+    opacity: 0.95;
+  }
+
+  .event-card-time {
+    padding-right: 0.5rem;
+    align-self: center;
+  }
+
+  .event-time-text {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #5c3d1e;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(252, 211, 77, 0.5);
+    box-shadow: 0 3px 16px rgba(120, 53, 15, 0.08);
+  }
+
+  .event-card-dot {
+    width: 22px;
+    height: 22px;
+    box-shadow:
+      0 0 0 5px rgba(255, 253, 245, 0.98),
+      0 6px 18px rgba(120, 53, 15, 0.12);
+  }
+
+  .event-card-body-wrap {
+    align-self: stretch;
+    display: flex;
+  }
+
+  .event-card-body {
+    flex: 1;
+    margin-left: 1.125rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 22px;
+    align-items: center;
+    box-shadow:
+      0 10px 40px rgba(120, 53, 15, 0.07),
+      0 2px 10px rgba(120, 53, 15, 0.04);
+    border: 1px solid rgba(251, 191, 36, 0.18);
+  }
+
+  .event-card-icon-wrap {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    border: 2px solid var(--event-accent, rgba(251, 191, 36, 0.65));
+    background: color-mix(in srgb, var(--event-accent, #fef3c7) 22%, #ffffff);
+  }
+
+  .event-card-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .event-card-title {
+    font-size: 1.28rem;
+  }
+
+  .event-card-desc {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    max-width: 52ch;
+  }
+}
+
+@media (min-width: 1024px) {
+  .event-schedule-inner {
+    max-width: min(56rem, 100%);
+  }
+
+  .event-schedule-list {
+    --es-time-col: 9rem;
+    --es-dot-col: 3.75rem;
+  }
+
+  .event-schedule-items {
+    gap: 2.5rem;
+  }
+
+  .event-card-body {
+    padding: 1.35rem 1.65rem;
+  }
+}
