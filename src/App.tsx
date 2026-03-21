@@ -195,35 +195,28 @@ const EVENT_SCHEDULE: {
   color: string;
   Icon: LucideIcon;
 }[] = [
-  {
-    time: '17:30 – 18:00',
-    title: 'Đón khách',
-    desc: 'Gia đình và bạn bè đến chúc mừng sinh nhật đầu đời của bé Cam.',
-    color: '#f9a8d4',
-    Icon: PartyPopper,
-  },
-  {
-    time: '18:00 – 18:30',
-    title: 'Chụp ảnh kỷ niệm',
-    desc: 'Cùng nhau lưu giữ những khoảnh khắc đáng nhớ bên bé Cam.',
-    color: '#facc15',
-    Icon: Camera,
-  },
-  {
-    time: '18:30 – 21:00',
-    title: 'Tiệc mừng cùng gia đình',
-    desc: 'Cùng nhau thưởng thức bữa tiệc ấm áp, vui vẻ bên gia đình và bạn bè.',
-    color: '#4ade80',
-    Icon: Cake,
-  },
-  {
-    time: '22:00',
-    title: 'Tiễn khách & chia vui',
-    desc: 'Xin cảm ơn tất cả đã dành thời gian quý báu đến chúc mừng bé Cam!',
-    color: '#a78bfa',
-    Icon: Hand,
-  },
-];
+    {
+      time: '17:30 – 18:30',
+      title: 'Đón khách & Chụp ảnh kỷ niệm',
+      desc: 'Gia đình hân hoan đón tiếp những người thân yêu đến chung vui và cùng lưu giữ những bức ảnh kỷ niệm đáng nhớ bên bé Cam.',
+      color: '#f9a8d4',
+      Icon: Camera, // Hoặc PartyPopper tùy bạn thích icon nào hơn
+    },
+    {
+      time: '18:00 – 21:00',
+      title: 'Tiệc mừng cùng gia đình',
+      desc: 'Cùng nhau thưởng thức bữa tiệc ấm áp, vui vẻ bên gia đình và bạn bè.',
+      color: '#4ade80',
+      Icon: Cake,
+    },
+    {
+      time: '22:00',
+      title: 'Tiễn khách & chia vui',
+      desc: 'Xin cảm ơn tất cả đã dành thời gian quý báu đến chúc mừng bé Cam!',
+      color: '#a78bfa',
+      Icon: Hand,
+    },
+  ];
 
 export default function App() {
   const [wishes, setWishes] = useState<Wish[]>([]);
@@ -631,54 +624,54 @@ export default function App() {
           <div className="event-schedule-list">
             <div className="event-schedule-line" aria-hidden />
             <ol className="event-schedule-items">
-            {EVENT_SCHEDULE.map((ev, idx) => {
-              const Icon = ev.Icon;
-              return (
-                <motion.li
-                  key={idx}
-                  className="event-card"
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, delay: idx * 0.08, ease: 'easeOut' }}
-                  viewport={{ once: true, amount: 0.25 }}
-                >
-                  <div className="event-card-meta">
-                    <div className="event-card-time">
-                      <span className="event-time-text">{ev.time}</span>
-                    </div>
-                    <div className="event-card-dot-wrap">
-                      <motion.div
-                        className="event-card-dot"
-                        style={{ background: ev.color, borderColor: ev.color }}
-                        initial={false}
-                        whileInView={{ scale: [0, 1.2, 1] }}
-                        transition={{ duration: 0.35, delay: idx * 0.08 + 0.15 }}
-                        viewport={{ once: true }}
-                      />
-                    </div>
-                  </div>
-
-                  <div
-                    className="event-card-body-wrap"
-                    style={{ ['--event-accent' as string]: ev.color }}
+              {EVENT_SCHEDULE.map((ev, idx) => {
+                const Icon = ev.Icon;
+                return (
+                  <motion.li
+                    key={idx}
+                    className="event-card"
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: idx * 0.08, ease: 'easeOut' }}
+                    viewport={{ once: true, amount: 0.25 }}
                   >
-                    <motion.div
-                      className="event-card-body"
-                      whileHover={{ y: -2, boxShadow: '0 14px 36px rgba(120,53,15,0.12)' }}
-                      transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-                    >
-                      <span className="event-card-icon-wrap" aria-hidden>
-                        <Icon className="event-card-icon" strokeWidth={1.75} />
-                      </span>
-                      <div className="event-card-text min-w-0">
-                        <p className="event-card-title">{ev.title}</p>
-                        <p className="event-card-desc">{ev.desc}</p>
+                    <div className="event-card-meta">
+                      <div className="event-card-time">
+                        <span className="event-time-text">{ev.time}</span>
                       </div>
-                    </motion.div>
-                  </div>
-                </motion.li>
-              );
-            })}
+                      <div className="event-card-dot-wrap">
+                        <motion.div
+                          className="event-card-dot"
+                          style={{ background: ev.color, borderColor: ev.color }}
+                          initial={false}
+                          whileInView={{ scale: [0, 1.2, 1] }}
+                          transition={{ duration: 0.35, delay: idx * 0.08 + 0.15 }}
+                          viewport={{ once: true }}
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      className="event-card-body-wrap"
+                      style={{ ['--event-accent' as string]: ev.color }}
+                    >
+                      <motion.div
+                        className="event-card-body"
+                        whileHover={{ y: -2, boxShadow: '0 14px 36px rgba(120,53,15,0.12)' }}
+                        transition={{ type: 'spring', stiffness: 380, damping: 28 }}
+                      >
+                        <span className="event-card-icon-wrap" aria-hidden>
+                          <Icon className="event-card-icon" strokeWidth={1.75} />
+                        </span>
+                        <div className="event-card-text min-w-0">
+                          <p className="event-card-title">{ev.title}</p>
+                          <p className="event-card-desc">{ev.desc}</p>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </motion.li>
+                );
+              })}
             </ol>
           </div>
         </div>
